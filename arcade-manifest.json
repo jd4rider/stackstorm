@@ -1,0 +1,37 @@
+{
+  "id": "stackstorm",
+  "name": "Stackstorm",
+  "tagline": "Stack. Slide. Storm.",
+  "description": "A neon falling-block puzzle game with a real Super Rotation System engine, a half-second slide window after every landing, and five distinct modes. Classic Marathon and Storm Mode build combos, back-to-back bonuses and a rechargeable surge; Sprint chases forty lines; Time Attack packs a score hunt into two minutes. Puzzle Journey adds 500 levels across ten themed worlds, each built from a working solution and replayed by the shipped engine before it ships: fill the wells with I pieces, spend the decoys without sealing your own route, and beat the gold time for three stars. Themes, trophies, lifetime statistics and local saves work offline; Little Joy Arcade accounts sync the same payload across devices when signed in.",
+  "categories": ["Puzzle", "Arcade", "Casual"],
+  "runtime": "Phaser 3",
+  "version": "1.0.0",
+  "updated": "2026-11-09",
+  "status": "live",
+  "featured": true,
+  "playUrl": "https://jd4rider.github.io/stackstorm/play/",
+  "siteUrl": "https://jd4rider.github.io/stackstorm/",
+  "repoUrl": "https://github.com/jd4rider/stackstorm",
+  "downloads": [],
+  "cover": { "from": "#67f6ff", "to": "#2a1152", "emoji": "\u26A1" },
+  "highlights": [
+    "A proper SRS falling-block engine: seven-bag randomizer, hold, ghost, wall kicks and frame-rate-independent timing",
+    "The slide window: successful moves and rotations reset the lock timer for up to fifteen nudges after a piece lands",
+    "Five modes: Classic Marathon, Storm Mode, Sprint, Time Attack and the 500-level Puzzle Journey",
+    "Storm Mode charges a meter on clears and spends it on a twelve-second double-score surge",
+    "500 Journey levels across ten worlds, each constructed from a proven solution and replay-validated in the test suite",
+    "Eight colour themes, fourteen trophies and lifetime statistics saved locally and synced by the arcade client",
+    "Portrait-first touch pad with press-and-hold movement, optional swipe gestures, and full keyboard controls",
+    "Accessibility: reduced motion, high contrast, per-piece symbols beyond colour, adjustable DAS/ARR and separate volume sliders",
+    "Runs entirely in the browser with no downloads, no accounts required and a fully offline core game"
+  ],
+  "howToPlay": [
+    "Move with the arrow keys or the on-screen pad; rotate with Up/X and Z; hold with C or Shift; hard drop with Space.",
+    "When a piece lands it waits half a second before locking. Keep sliding or turning to nudge it into place — the glowing outline and the bar at the top of the board show the window.",
+    "Complete rows to clear them. Consecutive clears build a combo and four-line clears pay a back-to-back bonus.",
+    "In Storm Mode, clear lines to charge the meter, then press S or tap SURGE for twelve seconds of double points.",
+    "In Puzzle Journey, use the I pieces to fill the empty wells and clear the target. Stars reward finishing under par and gold times."
+  ],
+  "levels": "500 Journey levels \u00b7 10 worlds + 4 arcade modes",
+  "saveKey": "stackstorm-save-v1"
+}
