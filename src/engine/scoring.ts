@@ -12,7 +12,7 @@ export function gravityForLevel(level: number): number {
 /** Sprint starts at a brisk, fixed speed and never speeds up further. */
 export const SPRINT_GRAVITY_MS = 550
 export const TIME_ATTACK_GRAVITY_MS = 600
-export const PUZZLE_GRAVITY_MS = 900
+export const PUZZLE_GRAVITY_MS = 650
 
 export function linePoints(lines: number, level: number, tspin: boolean, b2b: boolean, surge: boolean): number {
   const table = tspin ? TSPIN_POINTS : LINE_POINTS

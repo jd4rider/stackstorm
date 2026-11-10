@@ -29,15 +29,15 @@ export class MenuScene extends Phaser.Scene {
     ambientBlocks(this, root, theme, 14)
 
     root.add(
-      label(this, DESIGN_W / 2, 56, 'LITTLE JOY ARCADE', 11, theme.ui.accent, {
+      label(this, DESIGN_W / 2, 56, 'LITTLE JOY ARCADE', 12, theme.ui.accent, {
         origin: 0.5,
         letterSpacing: 4,
         fontStyle: 'bold',
       }),
     )
-    logo(this, root, DESIGN_W / 2, 124, theme, 78)
+    logo(this, root, DESIGN_W / 2, 124, theme, 62)
     root.add(
-      label(this, DESIGN_W / 2, 184, 'STACK · SLIDE · STORM', 12, theme.ui.muted, {
+      label(this, DESIGN_W / 2, 184, 'STACK · SLIDE · STORM', 14, theme.ui.muted, {
         origin: 0.5,
         letterSpacing: 3,
       }),
@@ -51,7 +51,7 @@ export class MenuScene extends Phaser.Scene {
     progressPill.strokeRoundedRect(DESIGN_W / 2 - 170, 214, 340, 34, 17)
     root.add(progressPill)
     root.add(
-      label(this, DESIGN_W / 2, 231, `\u2605 ${stars}   ·   JOURNEY ${Math.min(TOTAL_LEVELS, progress.journey.unlocked - 1)}/${TOTAL_LEVELS}`, 12, theme.ui.text, {
+      label(this, DESIGN_W / 2, 231, `\u2605 ${stars}   ·   JOURNEY ${Math.min(TOTAL_LEVELS, progress.journey.unlocked - 1)}/${TOTAL_LEVELS}`, 13, theme.ui.text, {
         origin: 0.5,
         fontStyle: 'bold',
         letterSpacing: 0.6,
@@ -121,7 +121,7 @@ export class MenuScene extends Phaser.Scene {
         {
           fill: entry.fill,
           textColor: entry.color,
-          size: 23,
+          size: 26,
           subtitle: entry.subtitle,
           glow: index === 0,
         },
@@ -148,7 +148,7 @@ export class MenuScene extends Phaser.Scene {
       root.add(node)
     })
 
-    const help = label(this, DESIGN_W / 2, secondaryY + 108, 'HOW TO PLAY', 13, theme.ui.accent, {
+    const help = label(this, DESIGN_W / 2, secondaryY + 108, 'HOW TO PLAY', 16, theme.ui.accent, {
       origin: 0.5,
       fontStyle: 'bold',
       letterSpacing: 2,

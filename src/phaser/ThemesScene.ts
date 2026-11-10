@@ -3,7 +3,7 @@ import { THEMES, isThemeUnlocked, themeById } from '../config/themes'
 import { sound } from '../core/audio'
 import { loadProgress, totalStars, updateSettings } from '../core/saves'
 import { backdrop, fadeIn, fadeTo, header, label, starRow, stage, toast, DESIGN_W, DESIGN_H, panel } from './common'
-import { blockKey } from './textures'
+import { buildTextures, blockKey } from './textures'
 
 export class ThemesScene extends Phaser.Scene {
   constructor() {
@@ -15,6 +15,9 @@ export class ThemesScene extends Phaser.Scene {
     const active = themeById(progress.settings.themeId)
     const stars = totalStars(progress)
     backdrop(this, active)
+    // The boot pass only builds the equipped theme, so prepare the swatches as
+    // this screen opens rather than making every player wait for all of them.
+    buildTextures(this, THEMES)
     const root = stage(this)
     header(this, root, 'THEMES', () => fadeTo(this, 'Menu'), active, `\u2605 ${stars}`)
     root.add(

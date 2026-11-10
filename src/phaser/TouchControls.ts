@@ -11,7 +11,7 @@ interface ControlSpec {
   label: string
 }
 
-const SPECS: Record<'row1' | 'row2' | 'landscape', ControlSpec[]> = {
+const SPECS: Record<'row1' | 'row2' | 'portrait' | 'landscape', ControlSpec[]> = {
   row1: [
     { action: 'hold', glyph: '\u21C4', label: 'HOLD' },
     { action: 'ccw', glyph: '\u21BA', label: 'LEFT SPIN' },
@@ -22,6 +22,15 @@ const SPECS: Record<'row1' | 'row2' | 'landscape', ControlSpec[]> = {
     { action: 'left', glyph: '\u2190', label: 'MOVE' },
     { action: 'soft', glyph: '\u25BC', label: 'SOFT' },
     { action: 'right', glyph: '\u2192', label: 'MOVE' },
+  ],
+  portrait: [
+    { action: 'left', glyph: '\u2190', label: 'MOVE' },
+    { action: 'right', glyph: '\u2192', label: 'MOVE' },
+    { action: 'soft', glyph: '\u25BC', label: 'SOFT' },
+    { action: 'ccw', glyph: '\u21BA', label: 'SPIN' },
+    { action: 'cw', glyph: '\u21BB', label: 'SPIN' },
+    { action: 'drop', glyph: '\u21E9', label: 'DROP' },
+    { action: 'hold', glyph: '\u21C4', label: 'HOLD' },
   ],
   landscape: [
     { action: 'left', glyph: '\u2190', label: 'MOVE' },
@@ -72,6 +81,10 @@ export class TouchControls {
       layout.touch.row1.forEach((rect, index) => this.create(rect, SPECS.landscape[index]!))
       return
     }
+    if (layout.touch.row2.length === 0) {
+      layout.touch.row1.forEach((rect, index) => this.create(rect, SPECS.portrait[index]!))
+      return
+    }
     layout.touch.row1.forEach((rect, index) => this.create(rect, SPECS.row1[index]!))
     layout.touch.row2.forEach((rect, index) => this.create(rect, SPECS.row2[index]!))
   }
@@ -81,16 +94,17 @@ export class TouchControls {
     const graphics = this.scene.add.graphics()
     const fill = 0x111a33
     const accent = Phaser.Display.Color.HexStringToColor(this.theme.ui.accent).color
+    const radius = Math.min(16, rect.w * 0.26)
     graphics.fillStyle(0x000000, 0.35)
-    graphics.fillRoundedRect(-rect.w / 2 + 2, -rect.h / 2 + 4, rect.w, rect.h, 16)
+    graphics.fillRoundedRect(-rect.w / 2 + 2, -rect.h / 2 + 4, rect.w, rect.h, radius)
     graphics.fillStyle(darkHex(fill, 0.25), 1)
-    graphics.fillRoundedRect(-rect.w / 2, -rect.h / 2 + 2, rect.w, rect.h, 16)
+    graphics.fillRoundedRect(-rect.w / 2, -rect.h / 2 + 2, rect.w, rect.h, radius)
     graphics.fillStyle(fill, 0.95)
-    graphics.fillRoundedRect(-rect.w / 2, -rect.h / 2, rect.w, rect.h, 16)
+    graphics.fillRoundedRect(-rect.w / 2, -rect.h / 2, rect.w, rect.h, radius)
     graphics.fillStyle(0xffffff, 0.09)
-    graphics.fillRoundedRect(-rect.w / 2 + 4, -rect.h / 2 + 3, rect.w - 8, rect.h * 0.35, 11)
+    graphics.fillRoundedRect(-rect.w / 2 + 4, -rect.h / 2 + 3, rect.w - 8, rect.h * 0.35, Math.min(11, radius))
     graphics.lineStyle(1.2, spec.action === 'drop' ? accent : 0xffffff, spec.action === 'drop' ? 0.55 : 0.14)
-    graphics.strokeRoundedRect(-rect.w / 2, -rect.h / 2, rect.w, rect.h, 16)
+    graphics.strokeRoundedRect(-rect.w / 2, -rect.h / 2, rect.w, rect.h, radius)
     container.add(graphics)
 
     const glyphSize = Math.min(rect.h * 0.44, 26)

@@ -36,7 +36,10 @@ const config: Phaser.Types.Core.GameConfig = {
   input: {
     activePointers: 4,
   },
-  fps: { target: 60, forceSetTimeOut: false },
+  // Do not average/shorten frame deltas: a smoothed delta makes gravity and
+  // lock delay run in slow motion on a slow device. The engine sub-steps the
+  // raw frame time itself and caps long stalls.
+  fps: { target: 60, forceSetTimeOut: false, smoothStep: false },
   scene: [
     BootScene,
     MenuScene,

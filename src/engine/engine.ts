@@ -315,8 +315,20 @@ export class StackstormEngine {
   // --------------------------------------------------------------------- tick
 
   update(deltaMs: number): void {
+    // Consume the whole frame instead of only the first 100 ms. Sub-stepping
+    // keeps gravity, lock delay and DAS in real time even when a slow device
+    // or a background tab delivers a long frame.
+    let remaining = Math.max(0, Math.min(deltaMs, 1_000))
+    while (remaining > 0) {
+      const step = Math.min(remaining, 100)
+      this.step(step)
+      remaining -= step
+      if (this.status === 'over' || this.status === 'won' || this.status === 'paused') break
+    }
+  }
+
+  private step(delta: number): void {
     if (this.status !== 'playing' && this.status !== 'clearing') return
-    const delta = Math.max(0, Math.min(deltaMs, 100))
     this.elapsedMs += delta
 
     if (this.timeLimitMs !== null) {
@@ -469,7 +481,11 @@ export class StackstormEngine {
     // Spawn just inside the visible well so a piece is on screen immediately.
     // Puzzle boards with stone in their top row fall back to the hidden buffer.
     const x = spawnX(id)
-    let y = this.hiddenRows - 1
+    // Spawn at the top visible row so every piece, including a flat I piece,
+    // is on screen the instant it appears. Fall back into the hidden buffer
+    // only when a puzzle board actually blocks the visible spawn row.
+    let y = this.hiddenRows
+    if (collides(this.board, id, 0, x, y, this.cols)) y = this.hiddenRows - 1
     if (collides(this.board, id, 0, x, y, this.cols)) y = 0
     this.active = { id, rotation: 0, x, y }
     this.lockTimer = 0

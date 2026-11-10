@@ -5,7 +5,7 @@ import type { StackstormEngine } from '../engine/engine'
 import { SHAPES } from '../engine/pieces'
 import { PIECE_INDEX, type PieceId } from '../engine/types'
 import type { GameLayout } from './layout'
-import { blockKey, darken, ghostKey, mixHex } from './textures'
+import { SPARK_KEY, blockKey, darken, ghostKey, mixHex } from './textures'
 
 export class PiecePreview {
   private readonly container: Phaser.GameObjects.Container
@@ -16,7 +16,7 @@ export class PiecePreview {
     this.container = scene.add.container(0, 0)
     parent.add(this.container)
     for (let index = 0; index < 4; index += 1) {
-      const image = scene.add.image(0, 0, blockKey('neon', 1)).setVisible(false)
+      const image = scene.add.image(0, 0, SPARK_KEY).setVisible(false)
       this.container.add(image)
       this.images.push(image)
     }
@@ -87,6 +87,7 @@ export class BoardRenderer {
   private readonly lockOverlay: Phaser.GameObjects.Graphics
   private readonly lastValues: number[] = []
   private highContrast = false
+  private cellSize = 0
 
   constructor(scene: Phaser.Scene, theme: Theme, layout: GameLayout) {
     this.scene = scene
@@ -217,14 +218,21 @@ export class BoardRenderer {
   sync(engine: StackstormEngine): void {
     const { cell } = this.layout
     const hidden = engine.hiddenRows
+    const layoutChanged = this.cellSize !== cell
+    if (layoutChanged) {
+      this.cellSize = cell
+      this.lastValues.fill(-1)
+    }
     this.guides.clear()
     this.activeGlow.clear()
+    this.activeGlow.setAlpha(0.82 + 0.18 * Math.sin(this.scene.time.now / 240))
     for (let row = 0; row < 20; row += 1) {
       for (let column = 0; column < 10; column += 1) {
         const index = row * 10 + column
         const value = engine.board[row + hidden]?.[column] ?? 0
         const image = this.cells[index]!
-        if (value !== this.lastValues[index]) {
+        const changed = value !== this.lastValues[index]
+        if (changed) {
           this.lastValues[index] = value
           if (value === 0) {
             image.setVisible(false)
@@ -233,7 +241,7 @@ export class BoardRenderer {
             image.setVisible(true)
           }
         }
-        if (value !== 0) {
+        if (value !== 0 && (changed || layoutChanged)) {
           image.setPosition(column * cell + 1, row * cell + 1)
           image.setDisplaySize(cell - 2, cell - 2)
         }
@@ -241,6 +249,9 @@ export class BoardRenderer {
     }
 
     const active = engine.active
+    const distance = active
+      ? dropDistance(engine.board, active.id, active.rotation, active.x, active.y, engine.cols)
+      : 0
     for (let index = 0; index < 4; index += 1) {
       const image = this.activeCells[index]!
       const ghost = this.ghostCells[index]!
@@ -261,7 +272,6 @@ export class BoardRenderer {
         image.setDisplaySize(cell - 2, cell - 2)
       }
 
-      const distance = dropDistance(engine.board, active.id, active.rotation, active.x, active.y, engine.cols)
       const ghostY = active.y + distance + cellOffset.y - hidden
       const ghostVisible = engine.grounded ? false : ghostY >= 0 && ghostY < 20 && x >= 0 && x < 10
       ghost.setVisible(ghostVisible)

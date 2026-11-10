@@ -19,7 +19,7 @@ import {
   toast,
   DESIGN_W,
 } from './common'
-import { blockKey } from './textures'
+import { buildTextures, blockKey } from './textures'
 
 export class JourneyScene extends Phaser.Scene {
   private progress!: Progress
@@ -60,6 +60,7 @@ export class JourneyScene extends Phaser.Scene {
   private buildWorld(worldId: number): void {
     this.world = worldById(worldId)
     const theme = themeById(this.world.themeId)
+    buildTextures(this, [theme])
     this.chipRoot.removeAll(true)
     this.mapRoot.removeAll(true)
     this.footerRoot.removeAll(true)

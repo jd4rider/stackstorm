@@ -290,7 +290,7 @@ export function button(
     container.add(label(scene, 22, height / 2 - 1, options.icon, options.size ?? 19, options.textColor ?? '#ffffff', { origin: 0.5 }))
   }
   if (options.subtitle) {
-    container.add(label(scene, width / 2, height - 15, options.subtitle, 10, options.textColor ?? '#ffffff', { origin: 0.5, alpha: 0.7 }))
+    container.add(label(scene, width / 2, height - 17, options.subtitle, 16, options.textColor ?? '#ffffff', { origin: 0.5, alpha: 0.78 }))
   }
   container.setSize(width, height + 6)
 

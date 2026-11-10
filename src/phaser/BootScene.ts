@@ -1,5 +1,6 @@
 import Phaser from 'phaser'
-import { THEMES } from '../config/themes'
+import { themeById } from '../config/themes'
+import { loadProgress } from '../core/saves'
 import { display, label, stage } from './common'
 import { buildTextures } from './textures'
 
@@ -55,9 +56,10 @@ export class BootScene extends Phaser.Scene {
       }),
     )
 
-    // One synchronous pass: every theme is ready before the menu appears, so a
-    // slow frame can never leave the game stuck on a partially built boot screen.
-    buildTextures(this, THEMES)
-    this.time.delayedCall(260, () => this.scene.start('Menu'))
+    // Build only the theme the player is wearing. Drawing all eight palettes
+    // up front blocked the first frame on phones for seconds; other themes are
+    // built lazily when the Themes screen opens.
+    buildTextures(this, [themeById(loadProgress().settings.themeId)])
+    this.time.delayedCall(180, () => this.scene.start('Menu'))
   }
 }

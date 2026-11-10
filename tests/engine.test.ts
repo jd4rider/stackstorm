@@ -109,6 +109,32 @@ describe('seven-bag', () => {
 })
 
 describe('engine basics', () => {
+  it('spawns every piece already visible inside the well', () => {
+    for (const id of PIECE_IDS) {
+      const engine = new StackstormEngine({ mode: 'marathon', seed: 1, queue: [id] })
+      engine.start()
+      const active = engine.active!
+      const cells = pieceCells(active.id, active.rotation, active.x, active.y)
+      expect(cells.some((cell) => cell.y >= engine.hiddenRows), `${id} should be on screen`).toBe(true)
+    }
+  })
+
+  it('keeps gravity real-time even when one frame is long', () => {
+    const engine = new StackstormEngine({ mode: 'marathon', seed: 1, queue: ['O'] })
+    engine.start()
+    const spawnY = engine.active!.y
+    engine.update(820)
+    expect(engine.active!.y).toBe(spawnY + 1)
+  })
+
+  it('drops puzzle pieces at the puzzle interval', () => {
+    const engine = new StackstormEngine({ mode: 'puzzle', queue: ['I', 'O'], linesTarget: 1 })
+    engine.start()
+    const spawnY = engine.active!.y
+    engine.update(660)
+    expect(engine.active!.y).toBe(spawnY + 1)
+  })
+
   it('spawns and falls under its own gravity', () => {
     const engine = new StackstormEngine({ mode: 'marathon', seed: 1 })
     engine.start()

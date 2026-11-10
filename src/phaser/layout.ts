@@ -43,40 +43,34 @@ export function computeLayout(width: number, height: number, showTouch: boolean)
   const portrait = height >= width * 0.92
 
   if (portrait) {
-    // A slim header and a compact touch pad leave the maximum possible board.
-    const header = Math.round(Math.max(106, Math.min(126, height * 0.135)))
-    const controls = showTouch ? Math.round(Math.max(104, Math.min(136, height * 0.13))) : 0
-    const available = height - header - controls - 6
-    const cell = Math.max(11, Math.floor(Math.min((width - 12) / 10, available / 20)))
+    // The score sits in a slim top bar, HOLD/NEXT ride just beneath it, and a
+    // single row of touch buttons leaves the rest of the screen for the well.
+    const topBar = Math.round(Math.max(54, Math.min(66, height * 0.066)))
+    const holdSize = 52
+    const boardTop = topBar + holdSize + 4
+    const controls = showTouch ? Math.round(Math.max(64, Math.min(76, height * 0.08))) : 0
+    const available = height - boardTop - controls - 4
+    const cell = Math.max(11, Math.floor(Math.min((width - 8) / 10, available / 20)))
     const boardW = cell * 10
     const boardH = cell * 20
     const boardX = Math.round((width - boardW) / 2)
-    const boardY = Math.round(header + Math.max(0, (available - boardH) / 2))
-    const holdSize = Math.min(52, boardW * 0.17)
-    const hold = { x: 8, y: header - holdSize - 8, w: holdSize, h: holdSize }
+    const boardY = Math.round(boardTop + Math.max(0, (available - boardH) / 2))
+    const hold = { x: 8, y: topBar - 2, w: holdSize, h: holdSize }
     const next = {
       x: 8 + holdSize + 8,
-      y: header - holdSize - 8,
-      w: Math.max(100, width - holdSize - 24),
+      y: topBar - 2,
+      w: Math.max(100, width - (8 + holdSize + 8) - 8),
       h: holdSize,
     }
     let touch: TouchLayout | null = null
     if (showTouch) {
-      const pad = 8
-      const rowH = (controls - pad * 3) / 2
-      // The arcade account bubble sits in the bottom-left corner; keep row two
-      // clear of it so the MOVE button is never covered.
-      const gutter = 46
+      const pad = 6
+      // The arcade account bubble sits in the bottom-left corner; leave that
+      // gutter free so the MOVE button is never covered.
+      const gutter = 64
       touch = {
-        row1: buttonRow(4, pad, height - controls + pad, width - pad * 2, rowH, pad),
-        row2: buttonRow(
-          3,
-          pad + gutter,
-          height - controls + pad * 2 + rowH,
-          width - (pad + gutter) * 2,
-          rowH,
-          pad,
-        ),
+        row1: buttonRow(7, gutter, height - controls + pad, width - gutter - pad, controls - pad * 2, 5),
+        row2: [],
         landscape: false,
       }
     }
@@ -89,11 +83,11 @@ export function computeLayout(width: number, height: number, showTouch: boolean)
       boardY,
       boardW,
       boardH,
-      header,
+      header: boardTop,
       controls,
       hold,
       next,
-      objectiveY: header - 8,
+      objectiveY: boardY,
       side: null,
       touch,
     }
