@@ -35,7 +35,7 @@ export class MenuScene extends Phaser.Scene {
         fontStyle: 'bold',
       }),
     )
-    logo(this, root, DESIGN_W / 2, 128, theme, 72)
+    logo(this, root, DESIGN_W / 2, 124, theme, 78)
     root.add(
       label(this, DESIGN_W / 2, 184, 'STACK · SLIDE · STORM', 12, theme.ui.muted, {
         origin: 0.5,
@@ -58,10 +58,10 @@ export class MenuScene extends Phaser.Scene {
       }),
     )
 
-    const buttonWidth = 470
-    const startY = 282
-    const height = 62
-    const gap = 10
+    const buttonWidth = 620
+    const startY = 258
+    const height = 78
+    const gap = 9
     const x = (DESIGN_W - buttonWidth) / 2
 
     const primary = [
@@ -121,7 +121,7 @@ export class MenuScene extends Phaser.Scene {
         {
           fill: entry.fill,
           textColor: entry.color,
-          size: 20,
+          size: 23,
           subtitle: entry.subtitle,
           glow: index === 0,
         },
@@ -130,7 +130,7 @@ export class MenuScene extends Phaser.Scene {
     })
 
     const secondaryY = startY + primary.length * (height + gap) + 20
-    const iconSize = 62
+    const iconSize = 68
     const secondary = [
       { glyph: '\u25D1', text: 'THEMES', action: () => fadeTo(this, 'Themes') },
       { glyph: '\u2605', text: 'TROPHIES', action: () => fadeTo(this, 'Achievements') },

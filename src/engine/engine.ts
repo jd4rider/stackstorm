@@ -466,7 +466,12 @@ export class StackstormEngine {
   }
 
   private spawnPiece(id: PieceId): void {
-    this.active = { id, rotation: 0, x: spawnX(id), y: 0 }
+    // Spawn just inside the visible well so a piece is on screen immediately.
+    // Puzzle boards with stone in their top row fall back to the hidden buffer.
+    const x = spawnX(id)
+    let y = this.hiddenRows - 1
+    if (collides(this.board, id, 0, x, y, this.cols)) y = 0
+    this.active = { id, rotation: 0, x, y }
     this.lockTimer = 0
     this.lockResets = 0
     this.lockProgress = 0

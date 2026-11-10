@@ -57,13 +57,14 @@ export class Hud {
     this.root = scene.add.container(0, 0).setDepth(30)
 
     const accent = theme.ui.accent
-    this.scoreText = label(scene, 0, 0, '0', 32, theme.ui.text, { origin: 0.5, fontStyle: 'bold' })
+    this.scoreText = label(scene, 0, 0, '0', 40, theme.ui.text, { origin: 0.5, fontStyle: 'bold' })
+    this.scoreText.setStroke('#050812', 6)
     this.modeText = label(scene, 0, 0, '', 12, accent, { fontStyle: 'bold', letterSpacing: 1.4 })
-    this.metaText = label(scene, 0, 0, '', 12, theme.ui.muted, { origin: [1, 0] })
-    this.objectiveText = label(scene, 0, 0, '', 13, theme.ui.text, { origin: 0.5, align: 'center' })
+    this.metaText = label(scene, 0, 0, '', 11, theme.ui.muted, { origin: [1, 0] })
+    this.objectiveText = label(scene, 0, 0, '', 11, theme.ui.text, { origin: 0.5, align: 'center' })
     this.comboText = label(scene, 0, 0, '', 20, accent, { origin: 0.5, fontStyle: 'bold', alpha: 0 })
-    this.holdLabel = label(scene, 0, 0, 'HOLD', 9, theme.ui.muted, { fontStyle: 'bold' })
-    this.nextLabel = label(scene, 0, 0, 'NEXT', 9, theme.ui.muted, { fontStyle: 'bold' })
+    this.holdLabel = label(scene, 0, 0, 'HOLD', 8, theme.ui.muted, { fontStyle: 'bold', letterSpacing: 1 })
+    this.nextLabel = label(scene, 0, 0, 'NEXT', 8, theme.ui.muted, { fontStyle: 'bold', letterSpacing: 1 })
     this.holdPanel = panel(scene, 0, 0, 10, 10, { radius: 12, fill: 0x0b1226, side: 0x05070f, raised: 2, strokeAlpha: 0.15 })
     this.nextPanel = panel(scene, 0, 0, 10, 10, { radius: 12, fill: 0x0b1226, side: 0x05070f, raised: 2, strokeAlpha: 0.15 })
     this.holdPreview = new PiecePreview(scene, this.holdPanel, 12)
@@ -144,32 +145,32 @@ export class Hud {
     this.layout = layout
     const portrait = layout.portrait
     if (portrait) {
-      this.scoreText.setPosition(layout.width / 2, 18)
+      this.scoreText.setPosition(layout.width / 2, 16)
       this.modeText.setPosition(10, 8)
-      this.metaText.setPosition(layout.width - 46, 9)
-      this.objectiveText.setPosition(layout.width / 2, 46)
+      this.metaText.setPosition(layout.width - 48, 9)
+      this.objectiveText.setPosition(layout.width / 2, 40)
       this.pauseButton.setPosition(layout.width - 26, 24)
-      this.comboText.setPosition(layout.width / 2, layout.boardY + 22)
-      this.holdLabel.setPosition(layout.hold.x, layout.hold.y - 10)
-      this.nextLabel.setPosition(layout.next.x, layout.next.y - 10)
+      this.comboText.setPosition(layout.width / 2, layout.boardY + 24)
+      this.holdLabel.setPosition(layout.hold.x + 7, layout.hold.y + 6)
+      this.nextLabel.setPosition(layout.next.x + 9, layout.next.y + 6)
       this.holdPanel.setPosition(layout.hold.x, layout.hold.y)
       this.nextPanel.setPosition(layout.next.x, layout.next.y)
-      this.stormBar.setPosition(layout.width / 2 - 70, 34)
+      this.stormBar.setPosition(layout.width / 2 - 70, 52)
       this.surgeButton.setPosition(layout.width / 2, 46)
     } else {
       const side = layout.side!
-      this.scoreText.setPosition(side.x + side.w / 2, layout.header + 22)
+      this.scoreText.setPosition(side.x + side.w / 2, layout.boardY + 20)
       this.modeText.setPosition(14, 10)
       this.metaText.setPosition(layout.width - 56, 11)
-      this.objectiveText.setPosition(side.x + side.w / 2, layout.header + 52)
+      this.objectiveText.setPosition(side.x + side.w / 2, layout.boardY + 54)
       this.pauseButton.setPosition(layout.width - 26, 26)
       this.comboText.setPosition(layout.boardX + layout.boardW / 2, layout.boardY + 24)
-      this.holdLabel.setPosition(layout.hold.x, layout.hold.y - 10)
-      this.nextLabel.setPosition(layout.next.x, layout.next.y - 10)
+      this.holdLabel.setPosition(layout.hold.x + 7, layout.hold.y + 6)
+      this.nextLabel.setPosition(layout.next.x + 7, layout.next.y + 6)
       this.holdPanel.setPosition(layout.hold.x, layout.hold.y)
       this.nextPanel.setPosition(layout.next.x, layout.next.y)
-      this.stormBar.setPosition(side.x + side.w / 2 - 70, layout.header + 72)
-      this.surgeButton.setPosition(side.x + side.w / 2, layout.header + 52)
+      this.stormBar.setPosition(side.x + side.w / 2 - 70, layout.boardY + 74)
+      this.surgeButton.setPosition(side.x + side.w / 2, layout.boardY + 74)
     }
     this.surgeButton.setVisible(false)
     this.previewSignature = ''
@@ -196,13 +197,13 @@ export class Hud {
       objective = `CLEAR ${target} LINES`
       if (this.info.levelName) objective = `${this.info.levelName.toUpperCase()}  ·  CLEAR ${target}`
     } else if (this.info.mode === 'sprint') {
-      objective = 'CLEAR 40 LINES AS FAST AS YOU CAN'
+      objective = '40 LINES · BEAT THE CLOCK'
     } else if (this.info.mode === 'timeattack') {
-      objective = 'TWO MINUTES — SCORE AS MUCH AS YOU CAN'
+      objective = '2 MINUTES · MAXIMUM SCORE'
     } else if (this.info.mode === 'storm') {
-      objective = engine.stormRemainingMs > 0 ? 'SURGE ACTIVE — DOUBLE POINTS' : 'CHARGE THE STORM METER'
+      objective = engine.stormRemainingMs > 0 ? 'SURGE · DOUBLE POINTS' : 'CHARGE THE STORM METER'
     } else {
-      objective = 'MARATHON — EVERY TEN LINES RAISES THE LEVEL'
+      objective = 'CLEAR LINES · LEVEL UP EVERY 10'
     }
     if (objective !== this.lastObjective) {
       this.lastObjective = objective
@@ -264,26 +265,30 @@ export class Hud {
 
   private refreshPreviews(engine: StackstormEngine): void {
     const mini = this.layout.portrait
-      ? Math.max(6, Math.min(13, this.layout.hold.h * 0.22))
-      : Math.max(6, Math.min(13, this.layout.hold.w * 0.2))
+      ? Math.max(10, Math.min(17, this.layout.hold.h * 0.31))
+      : Math.max(11, Math.min(19, this.layout.hold.w * 0.28))
     this.holdPreview.setCell(mini)
     this.holdPreview.show(engine.hold ?? null, this.theme, engine.hold ? 1 : 0.25)
-    this.holdPreview.setPosition(this.layout.hold.w / 2, this.layout.hold.h / 2)
+    this.holdPreview.setPosition(this.layout.hold.w / 2, this.layout.hold.h / 2 + 5)
 
     const count = this.nextPreviews.length
+    if (this.layout.portrait) {
+      const spacing = Math.min(46, this.layout.next.w / count)
+      const startX = this.layout.next.w / 2 - ((count - 1) * spacing) / 2
+      this.nextPreviews.forEach((preview, index) => {
+        preview.setCell(index === 0 ? Math.min(20, mini * 1.3) : Math.max(8, mini * 0.82))
+        preview.show(engine.queue[index] ?? null, this.theme, index === 0 ? 1 : 0.78)
+        preview.setPosition(startX + index * spacing, this.layout.next.h / 2 + 5)
+      })
+      return
+    }
+
+    const spacing = Math.min(50, (this.layout.next.h - 16) / count)
+    const startY = this.layout.next.h / 2 - ((count - 1) * spacing) / 2 + 4
     this.nextPreviews.forEach((preview, index) => {
-      preview.setCell(Math.max(5, mini * 0.8))
-      preview.show(engine.queue[index] ?? null, this.theme, index === 0 ? 1 : 0.8)
-      if (this.layout.portrait) {
-        const spacing = this.layout.next.w / count
-        preview.setPosition(spacing * (index + 0.5), this.layout.next.h / 2)
-      } else if (this.layout.next.h < 220) {
-        const spacing = this.layout.next.w / count
-        preview.setPosition(spacing * (index + 0.5), this.layout.next.h / 2)
-      } else {
-        const spacing = Math.min(this.layout.next.h / count, 58)
-        preview.setPosition(this.layout.next.w / 2, spacing * (index + 0.5))
-      }
+      preview.setCell(index === 0 ? Math.min(21, mini * 1.25) : Math.max(8, mini * 0.72))
+      preview.show(engine.queue[index] ?? null, this.theme, index === 0 ? 1 : 0.78)
+      preview.setPosition(this.layout.next.w / 2, startY + index * spacing)
     })
   }
 

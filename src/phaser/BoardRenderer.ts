@@ -5,7 +5,7 @@ import type { StackstormEngine } from '../engine/engine'
 import { SHAPES } from '../engine/pieces'
 import { PIECE_INDEX, type PieceId } from '../engine/types'
 import type { GameLayout } from './layout'
-import { blockKey, ghostKey } from './textures'
+import { blockKey, darken, ghostKey, mixHex } from './textures'
 
 export class PiecePreview {
   private readonly container: Phaser.GameObjects.Container
@@ -79,6 +79,8 @@ export class BoardRenderer {
   private layout: GameLayout
   private readonly container: Phaser.GameObjects.Container
   private readonly background: Phaser.GameObjects.Graphics
+  private readonly guides: Phaser.GameObjects.Graphics
+  private readonly activeGlow: Phaser.GameObjects.Graphics
   private readonly cells: Phaser.GameObjects.Image[] = []
   private readonly activeCells: Phaser.GameObjects.Image[] = []
   private readonly ghostCells: Phaser.GameObjects.Image[] = []
@@ -93,12 +95,16 @@ export class BoardRenderer {
     this.container = scene.add.container(layout.boardX, layout.boardY)
     this.background = scene.add.graphics()
     this.container.add(this.background)
+    this.guides = scene.add.graphics()
+    this.container.add(this.guides)
     for (let index = 0; index < 10 * 20; index += 1) {
       const image = scene.add.image(0, 0, blockKey(theme.id, 1)).setOrigin(0, 0).setVisible(false)
       this.container.add(image)
       this.cells.push(image)
       this.lastValues.push(-1)
     }
+    this.activeGlow = scene.add.graphics().setBlendMode(Phaser.BlendModes.ADD)
+    this.container.add(this.activeGlow)
     for (let index = 0; index < 8; index += 1) {
       const ghost = scene.add.image(0, 0, ghostKey(theme.id)).setOrigin(0, 0).setVisible(false)
       this.container.add(ghost)
@@ -136,29 +142,83 @@ export class BoardRenderer {
   private drawBackground(): void {
     const { boardW, boardH, cell } = this.layout
     const accent = Phaser.Display.Color.HexStringToColor(this.theme.ui.accent).color
-    const grid = Phaser.Display.Color.HexStringToColor(this.theme.ui.grid).color
+    const accent2 = Phaser.Display.Color.HexStringToColor(this.theme.ui.accent2).color
+    const danger = Phaser.Display.Color.HexStringToColor(this.theme.ui.danger).color
+    const panel = Phaser.Display.Color.HexStringToColor(this.theme.ui.panel).color
+    const top = mixHex(panel, accent, 0.1)
+    const bottom = darken(panel, 0.5)
     this.background.clear()
-    this.background.fillStyle(0x05070f, 0.92)
-    this.background.fillRoundedRect(-3, -3, boardW + 6, boardH + 6, 10)
-    this.background.fillStyle(Phaser.Display.Color.HexStringToColor(this.theme.ui.panel).color, 1)
-    this.background.fillRoundedRect(0, 0, boardW, boardH, 8)
-    this.background.lineStyle(2, accent, this.highContrast ? 0.55 : 0.28)
-    this.background.strokeRoundedRect(0.5, 0.5, boardW - 1, boardH - 1, 8)
-    this.background.lineStyle(1, grid, this.highContrast ? 0.42 : 0.22)
+
+    // Soft neon bloom around the well.
+    for (let ring = 5; ring >= 1; ring -= 1) {
+      this.background.lineStyle(3, accent, 0.035)
+      this.background.strokeRoundedRect(-ring * 3, -ring * 3, boardW + ring * 6, boardH + ring * 6, 12 + ring * 3)
+    }
+    this.background.fillStyle(0x05070f, 0.9)
+    this.background.fillRoundedRect(-5, -2, boardW + 10, boardH + 10, 14)
+
+    // Vertical gradient drawn as bands so it also renders on Canvas.
+    const bands = 26
+    const bandHeight = boardH / bands
+    for (let index = 0; index < bands; index += 1) {
+      this.background.fillStyle(mixHex(top, bottom, index / (bands - 1)), 1)
+      this.background.fillRect(2, Math.floor(index * bandHeight), boardW - 4, Math.ceil(bandHeight) + 1)
+    }
+
+    // Faint checkerboard keeps empty cells readable without looking grey.
+    for (let row = 0; row < 20; row += 1) {
+      for (let column = 0; column < 10; column += 1) {
+        if ((row + column) % 2 !== 0) continue
+        this.background.fillStyle(accent, this.highContrast ? 0.07 : 0.035)
+        this.background.fillRect(column * cell + 1, row * cell + 1, cell - 2, cell - 2)
+      }
+    }
+
+    this.background.lineStyle(1, accent, this.highContrast ? 0.42 : 0.2)
     for (let column = 1; column < 10; column += 1) {
-      this.background.lineBetween(column * cell, 3, column * cell, boardH - 3)
+      this.background.lineBetween(column * cell, 0, column * cell, boardH)
     }
     for (let row = 1; row < 20; row += 1) {
-      this.background.lineBetween(3, row * cell, boardW - 3, row * cell)
+      this.background.lineBetween(0, row * cell, boardW, row * cell)
     }
-    // The faint spawn band at the very top.
-    this.background.fillStyle(accent, 0.04)
-    this.background.fillRect(3, 3, boardW - 6, cell * 1.2)
+
+    // Spawn glow at the top, warning light at the floor.
+    this.background.fillStyle(accent, 0.1)
+    this.background.fillRect(2, 2, boardW - 4, cell * 0.8)
+    this.background.fillStyle(accent, 0.05)
+    this.background.fillRect(2, cell * 0.8, boardW - 4, cell * 0.7)
+    this.background.fillStyle(danger, 0.07)
+    this.background.fillRect(2, boardH - cell * 2, boardW - 4, cell * 2 - 2)
+
+    // Side rails.
+    this.background.fillStyle(accent, 0.3)
+    this.background.fillRect(2, 10, 2, boardH - 20)
+    this.background.fillRect(boardW - 4, 10, 2, boardH - 20)
+
+    // Frame, inner glow and bold corner brackets.
+    this.background.lineStyle(2.5, accent, 0.9)
+    this.background.strokeRoundedRect(0.5, 0.5, boardW - 1, boardH - 1, 10)
+    this.background.lineStyle(1, accent2, 0.55)
+    this.background.strokeRoundedRect(4.5, 4.5, boardW - 9, boardH - 9, 8)
+    const bracket = Math.max(16, cell * 0.7)
+    this.background.lineStyle(4, accent2, 1)
+    const corners = [
+      [3, 3, 1, 1],
+      [boardW - 3, 3, -1, 1],
+      [3, boardH - 3, 1, -1],
+      [boardW - 3, boardH - 3, -1, -1],
+    ] as const
+    for (const [x, y, dx, dy] of corners) {
+      this.background.lineBetween(x, y, x + bracket * dx, y)
+      this.background.lineBetween(x, y, x, y + bracket * dy)
+    }
   }
 
   sync(engine: StackstormEngine): void {
     const { cell } = this.layout
     const hidden = engine.hiddenRows
+    this.guides.clear()
+    this.activeGlow.clear()
     for (let row = 0; row < 20; row += 1) {
       for (let column = 0; column < 10; column += 1) {
         const index = row * 10 + column
@@ -208,7 +268,27 @@ export class BoardRenderer {
       if (ghostVisible) {
         ghost.setPosition(x * cell + 1, ghostY * cell + 1)
         ghost.setDisplaySize(cell - 2, cell - 2)
-        ghost.setAlpha(0.42)
+        ghost.setAlpha(0.55)
+      }
+    }
+
+    if (active) {
+      const cells = SHAPES[active.id][active.rotation]!
+      const xs = cells.map((offset) => active.x + offset.x)
+      const minX = Math.min(...xs)
+      const maxX = Math.max(...xs)
+      const accent = Phaser.Display.Color.HexStringToColor(this.theme.ui.accent).color
+      this.guides.fillStyle(accent, 0.045)
+      this.guides.fillRect(minX * cell, 0, (maxX - minX + 1) * cell, this.layout.boardH)
+      this.guides.fillStyle(accent, 0.11)
+      this.guides.fillRect(minX * cell, 0, (maxX - minX + 1) * cell, 2)
+      const color = this.theme.pieces[active.id]
+      for (const offset of cells) {
+        const x = active.x + offset.x
+        const y = active.y + offset.y - hidden
+        if (y < 0 || y >= 20 || x < 0 || x >= 10) continue
+        this.activeGlow.fillStyle(color, 0.16)
+        this.activeGlow.fillRoundedRect(x * cell - 2, y * cell - 2, cell + 4, cell + 4, Math.max(4, cell * 0.2))
       }
     }
 
