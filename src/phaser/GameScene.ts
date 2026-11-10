@@ -75,6 +75,18 @@ export class GameScene extends Phaser.Scene {
 
   create(data: GameData): void {
     this.mode = data.mode
+    // Phaser reuses the scene instance between runs, so every per-run field has
+    // to be reset here. Leaving `finished` set from the previous run made a
+    // freshly started level sit frozen: update() bailed on its first line and
+    // every button was ignored.
+    this.finished = false
+    this.paused = false
+    this.lastDirection = 0
+    this.softDown = false
+    this.stormActivations = 0
+    this.lastTickSecond = -1
+    this.pauseOverlay = null
+    this.touch = null
     this.progress = loadProgress()
     this.settings = this.progress.settings
     this.theme = themeById(this.settings.themeId)
