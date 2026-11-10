@@ -70,7 +70,7 @@ export function computeLayout(width: number, height: number, showTouch: boolean)
       // putting the arrows at opposite ends of the screen.
       const gutter = 56
       touch = {
-        row1: buttonRow(7, gutter, height - controls + pad, width - gutter - pad, controls - pad * 2, 5),
+        row1: buttonRow(6, gutter, height - controls + pad, width - gutter - pad, controls - pad * 2, 5),
         row2: [],
         landscape: false,
       }
@@ -122,7 +122,7 @@ export function computeLayout(width: number, height: number, showTouch: boolean)
     const pad = 7
     const heightRow = controls - pad * 2
     touch = {
-      row1: buttonRow(7, pad, height - controls + pad, width - pad * 2, heightRow, pad),
+      row1: buttonRow(6, pad, height - controls + pad, width - pad * 2, heightRow, pad),
       row2: [],
       landscape: true,
     }

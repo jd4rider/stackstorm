@@ -11,39 +11,18 @@ interface ControlSpec {
   label: string
 }
 
-const SPECS: Record<'row1' | 'row2' | 'portrait' | 'landscape', ControlSpec[]> = {
-  row1: [
-    { action: 'hold', glyph: '\u21C4', label: 'HOLD' },
-    { action: 'ccw', glyph: '\u21BA', label: 'LEFT SPIN' },
-    { action: 'cw', glyph: '\u21BB', label: 'RIGHT SPIN' },
-    { action: 'drop', glyph: '\u21E9', label: 'DROP' },
-  ],
-  row2: [
-    { action: 'left', glyph: '\u2190', label: 'MOVE' },
-    { action: 'soft', glyph: '\u25BC', label: 'SOFT' },
-    { action: 'right', glyph: '\u2192', label: 'MOVE' },
-  ],
-  // The two arrows sit at the far ends of the strip so a thumb on either side
-  // of the phone always finds a move button without looking.
-  portrait: [
-    { action: 'left', glyph: '\u2190', label: 'MOVE' },
-    { action: 'soft', glyph: '\u25BC', label: 'SOFT' },
-    { action: 'ccw', glyph: '\u21BA', label: 'SPIN' },
-    { action: 'drop', glyph: '\u21E9', label: 'DROP' },
-    { action: 'cw', glyph: '\u21BB', label: 'SPIN' },
-    { action: 'hold', glyph: '\u21C4', label: 'HOLD' },
-    { action: 'right', glyph: '\u2192', label: 'MOVE' },
-  ],
-  landscape: [
-    { action: 'left', glyph: '\u2190', label: 'MOVE' },
-    { action: 'soft', glyph: '\u25BC', label: 'SOFT' },
-    { action: 'ccw', glyph: '\u21BA', label: 'SPIN' },
-    { action: 'drop', glyph: '\u21E9', label: 'DROP' },
-    { action: 'cw', glyph: '\u21BB', label: 'SPIN' },
-    { action: 'hold', glyph: '\u21C4', label: 'HOLD' },
-    { action: 'right', glyph: '\u2192', label: 'MOVE' },
-  ],
-}
+// One six-button strip for every screen shape. The two move arrows sit at the
+// far ends so a thumb on either side always finds them, and there is a single
+// spin button: counter-clockwise rotation stays on the Z key for players who
+// want it, but the touch pad keeps only the action most people reach for.
+const SPECS: ControlSpec[] = [
+  { action: 'left', glyph: '\u2190', label: 'MOVE' },
+  { action: 'soft', glyph: '\u25BC', label: 'SOFT' },
+  { action: 'cw', glyph: '\u21BB', label: 'SPIN' },
+  { action: 'drop', glyph: '\u21E9', label: 'DROP' },
+  { action: 'hold', glyph: '\u21C4', label: 'HOLD' },
+  { action: 'right', glyph: '\u2192', label: 'MOVE' },
+]
 
 export class TouchControls {
   private readonly scene: Phaser.Scene
@@ -79,16 +58,10 @@ export class TouchControls {
     this.root.removeAll(true)
     if (!layout.touch) return
     this.root.setVisible(this.visible)
-    if (layout.touch.landscape) {
-      layout.touch.row1.forEach((rect, index) => this.create(rect, SPECS.landscape[index]!))
-      return
-    }
-    if (layout.touch.row2.length === 0) {
-      layout.touch.row1.forEach((rect, index) => this.create(rect, SPECS.portrait[index]!))
-      return
-    }
-    layout.touch.row1.forEach((rect, index) => this.create(rect, SPECS.row1[index]!))
-    layout.touch.row2.forEach((rect, index) => this.create(rect, SPECS.row2[index]!))
+    layout.touch.row1.forEach((rect, index) => {
+      const spec = SPECS[index]
+      if (spec) this.create(rect, spec)
+    })
   }
 
   private create(rect: Rect, spec: ControlSpec): void {

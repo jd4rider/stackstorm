@@ -79,11 +79,11 @@ export class HelpScene extends Phaser.Scene {
       ['← →', 'Move · hold to repeat'],
       ['↓', 'Soft drop'],
       ['SPACE', 'Hard drop'],
-      ['↑ / X', 'Rotate clockwise'],
-      ['Z', 'Rotate counterclockwise'],
+      ['↑ / X', 'Rotate'],
       ['C / SHIFT', 'Hold a piece'],
       ['ESC / P', 'Pause'],
       ['S', 'Activate Storm Surge'],
+      ['TAP', 'Rotate the piece'],
     ]
     controls.forEach(([key, meaning], index) => {
       const column = index % 2

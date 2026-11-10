@@ -5,14 +5,16 @@ export const COMBO_STEP = 50
 
 /** Gravity in milliseconds per cell for a given level (1-based). */
 export function gravityForLevel(level: number): number {
-  const table = [800, 720, 630, 550, 470, 390, 320, 260, 210, 170, 140, 120, 105, 90, 80, 70, 62, 56, 50]
+  // A gentle opening: a full second per row at level 1 so the first pieces can
+  // be read and placed calmly, then a steady ramp toward arcade speed.
+  const table = [1000, 900, 810, 720, 630, 550, 470, 400, 340, 285, 240, 200, 170, 145, 120, 100, 85, 72, 60]
   return table[Math.min(Math.max(level, 1) - 1, table.length - 1)]!
 }
 
 /** Sprint starts at a brisk, fixed speed and never speeds up further. */
 export const SPRINT_GRAVITY_MS = 550
 export const TIME_ATTACK_GRAVITY_MS = 600
-export const PUZZLE_GRAVITY_MS = 380
+export const PUZZLE_GRAVITY_MS = 900
 
 export function linePoints(lines: number, level: number, tspin: boolean, b2b: boolean, surge: boolean): number {
   const table = tspin ? TSPIN_POINTS : LINE_POINTS

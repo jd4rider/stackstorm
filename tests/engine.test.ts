@@ -123,7 +123,7 @@ describe('engine basics', () => {
     const engine = new StackstormEngine({ mode: 'marathon', seed: 1, queue: ['O'] })
     engine.start()
     const spawnY = engine.active!.y
-    engine.update(820)
+    engine.update(1020)
     expect(engine.active!.y).toBe(spawnY + 1)
   })
 
@@ -131,7 +131,7 @@ describe('engine basics', () => {
     const engine = new StackstormEngine({ mode: 'puzzle', queue: ['I', 'O'], linesTarget: 1 })
     engine.start()
     const spawnY = engine.active!.y
-    engine.update(660)
+    engine.update(920)
     expect(engine.active!.y).toBe(spawnY + 1)
   })
 
@@ -140,7 +140,7 @@ describe('engine basics', () => {
     engine.start()
     const first = engine.active!.id
     expect(engine.status).toBe('playing')
-    step(engine, 810)
+    step(engine, 1020)
     expect(engine.active).not.toBeNull()
     expect(['playing', 'clearing']).toContain(engine.status)
     expect(PIECE_IDS).toContain(first)
