@@ -86,10 +86,12 @@ describe('hold', () => {
     expect(engine.hold).toBe('O')
   })
 
-  it('is disabled in puzzle mode', () => {
-    const engine = new StackstormEngine({ mode: 'puzzle', queue: ['I', 'O'], linesTarget: 1 })
+  it('is available in puzzle mode now that Journey runs are endless', () => {
+    const engine = new StackstormEngine({ mode: 'puzzle', queue: ['I', 'O'], scoreTarget: 5_000 })
     engine.start()
-    expect(engine.holdPiece()).toBe(false)
+    expect(engine.holdPiece()).toBe(true)
+    expect(engine.hold).toBe('I')
+    expect(engine.active?.id).toBe('O')
   })
 })
 

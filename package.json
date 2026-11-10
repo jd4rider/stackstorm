@@ -1,7 +1,7 @@
 {
   "name": "stackstorm",
   "private": true,
-  "version": "1.0.5",
+  "version": "1.1.0",
   "type": "module",
   "description": "Stackstorm \u2014 a neon falling-block puzzle game for Little Joy Arcade.",
   "author": "jd4rider",

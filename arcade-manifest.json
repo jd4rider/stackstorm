@@ -2,10 +2,10 @@
   "id": "stackstorm",
   "name": "Stackstorm",
   "tagline": "Stack. Slide. Storm.",
-  "description": "A neon falling-block puzzle game with a real Super Rotation System engine, a half-second slide window after every landing, and five distinct modes. Classic Marathon and Storm Mode build combos, back-to-back bonuses and a rechargeable surge; Sprint chases forty lines; Time Attack packs a score hunt into two minutes. Puzzle Journey adds 500 levels across ten themed worlds, each built from a working solution and replayed by the shipped engine before it ships: fill the wells with I pieces, spend the decoys without sealing your own route, and beat the gold time for three stars. Themes, trophies, lifetime statistics and local saves work offline; Little Joy Arcade accounts sync the same payload across devices when signed in.",
+  "description": "A neon falling-block puzzle game with a real Super Rotation System engine, a half-second slide window after every landing, and five distinct modes. Classic Marathon and Storm Mode build combos, back-to-back bonuses and a rechargeable surge; Sprint chases forty lines; Time Attack packs a score hunt into two minutes. Puzzle Journey adds 500 levels across ten themed worlds, each an endless score chase over a stone wall: fill the wells to bring the walls down, keep playing until the stack tops out, and beat the score target before you run out of room. Score above the goal for two and three stars. Themes, trophies, lifetime statistics and local saves work offline; Little Joy Arcade accounts sync the same payload across devices when signed in.",
   "categories": ["Puzzle", "Arcade", "Casual"],
   "runtime": "Phaser 3",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "updated": "2026-11-10",
   "status": "live",
   "featured": true,
@@ -20,7 +20,7 @@
     "The slide window: successful moves and rotations reset the lock timer for up to fifteen nudges after a piece lands",
     "Five modes: Classic Marathon, Storm Mode, Sprint, Time Attack and the 500-level Puzzle Journey",
     "Storm Mode charges a meter on clears and spends it on a twelve-second double-score surge",
-    "500 Journey levels across ten worlds, each constructed from a proven solution and replay-validated in the test suite",
+    "500 Journey levels across ten worlds, each an endless score chase whose stone wall the test suite proves is clearable",
     "Eight colour themes, thirteen trophies and lifetime statistics saved locally and synced by the arcade client",
     "Portrait-first touch pad with press-and-hold movement, optional swipe gestures, and full keyboard controls",
     "Accessibility: reduced motion, high contrast, per-piece symbols beyond colour, adjustable DAS/ARR and separate volume sliders",
@@ -31,7 +31,7 @@
     "When a piece lands it waits half a second before locking. Keep sliding or turning to nudge it into place — the glowing outline and the bar at the top of the board show the window.",
     "Complete rows to clear them. Consecutive clears build a combo and four-line clears pay a back-to-back bonus.",
     "In Storm Mode, clear lines to charge the meter, then press S or tap SURGE for twelve seconds of double points.",
-    "In Puzzle Journey, use the I pieces to fill the empty wells and clear the target. Stars reward finishing under par and gold times."
+    "In Puzzle Journey you play until the stack tops out: clear the stone walls by filling the wells, and beat the score target before you run out of room."
   ],
   "levels": "500 Journey levels \u00b7 10 worlds + 4 arcade modes",
   "saveKey": "stackstorm-save-v1"

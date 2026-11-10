@@ -11,6 +11,7 @@ import {
   button,
   fadeIn,
   fadeTo,
+  formatNumber,
   header,
   label,
   panel,
@@ -219,14 +220,18 @@ export class JourneyScene extends Phaser.Scene {
         this,
         42,
         1140,
-        canPlay ? `NEXT UP · LEVEL ${currentLevel.index} · ${currentLevel.sequence.length} PIECES` : worldStars >= worldLevels.length * 3 ? 'WORLD MASTERED' : 'KEEP CLEARING TO OPEN THIS WORLD',
+        canPlay
+          ? `NEXT UP · LEVEL ${currentLevel.index} · ${formatNumber(currentLevel.scoreTarget)} POINTS TO CLEAR`
+          : worldStars >= worldLevels.length * 3
+            ? 'WORLD MASTERED'
+            : 'KEEP CLEARING TO OPEN THIS WORLD',
         12,
         theme.ui.text,
         { fontStyle: 'bold' },
       ),
     )
     this.footerRoot.add(
-      label(this, 42, 1164, 'Tap a lit node to play. Stars reward speed and clean solves.', 10, theme.ui.muted),
+      label(this, 42, 1164, 'Tap a lit node to play. Score above the goal for more stars.', 10, theme.ui.muted),
     )
     const playButton = button(
       this,

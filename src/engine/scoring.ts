@@ -40,16 +40,12 @@ export function stormCharge(lines: number, tspin: boolean, perfect: boolean): nu
 export const STORM_THRESHOLD = 100
 export const STORM_SURGE_MS = 12_000
 
-/** Puzzle star thresholds, derived from the number of pieces in the level. */
-export function puzzleTimes(pieces: number): { goldMs: number; parMs: number } {
-  return {
-    goldMs: 3_500 + pieces * 1_350,
-    parMs: 6_000 + pieces * 2_200,
-  }
-}
-
-export function puzzleStars(elapsedMs: number, times: { goldMs: number; parMs: number }): number {
-  if (elapsedMs <= times.goldMs) return 3
-  if (elapsedMs <= times.parMs) return 2
+/** Journey stars: one for the target, then two score tiers above it. */
+export function puzzleStars(
+  score: number,
+  level: { scoreTarget: number; twoStarScore: number; threeStarScore: number },
+): number {
+  if (score >= level.threeStarScore) return 3
+  if (score >= level.twoStarScore) return 2
   return 1
 }

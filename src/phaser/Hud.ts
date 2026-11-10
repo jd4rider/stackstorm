@@ -9,6 +9,7 @@ import { PiecePreview } from './BoardRenderer'
 export interface HudInfo {
   mode: GameMode
   targetLines: number
+  targetScore?: number
   levelName?: string
 }
 
@@ -211,8 +212,7 @@ export class Hud {
     if (this.info.mode === 'sprint') meta = `${lines}/${target}  ·  ${formatClock(engine.elapsedMs)}`
     else if (this.info.mode === 'timeattack') meta = `${formatClock(engine.timeRemainingMs ?? 0)}  ·  ${lines} LINES`
     else if (this.info.mode === 'puzzle') {
-      const left = engine.queue.length + (engine.active ? 1 : 0)
-      meta = `${lines}/${target} LINES  ·  ${left} PIECE${left === 1 ? '' : 'S'} LEFT`
+      meta = `GOAL ${formatNumber(this.info.targetScore ?? 0)}  ·  ${lines} LINES  ·  LV ${engine.level}`
     }
     if (meta !== this.lastMeta) {
       this.lastMeta = meta
@@ -221,8 +221,9 @@ export class Hud {
 
     let objective = ''
     if (this.info.mode === 'puzzle') {
-      objective = `CLEAR ${target} LINES`
-      if (this.info.levelName) objective = `${this.info.levelName.toUpperCase()}  ·  CLEAR ${target}`
+      const goal = formatNumber(this.info.targetScore ?? 0)
+      objective = `REACH ${goal} POINTS`
+      if (this.info.levelName) objective = `${this.info.levelName.toUpperCase()}  ·  ${goal} PTS`
     } else if (this.info.mode === 'sprint') {
       objective = '40 LINES · BEAT THE CLOCK'
     } else if (this.info.mode === 'timeattack') {

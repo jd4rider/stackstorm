@@ -58,6 +58,8 @@ export interface EngineOptions {
   board?: number[][]
   startLevel?: number
   linesTarget?: number
+  /** Reach this score to win (Journey levels). */
+  scoreTarget?: number
   timeLimitMs?: number
   /** Milliseconds per gravity step; otherwise derived from the level. */
   gravityMs?: number

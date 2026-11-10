@@ -37,6 +37,7 @@ export interface RunOutcome {
   elapsedMs: number
   perfectClears: number
   stars: number
+  targetScore?: number
   levelId?: string
   levelName?: string
   nextLevelId?: string
@@ -147,7 +148,8 @@ export class GameScene extends Phaser.Scene {
       this.layout,
       {
         mode: this.mode,
-        targetLines: this.mode === 'sprint' ? 40 : this.mode === 'puzzle' ? this.level?.linesTarget ?? 4 : 0,
+        targetLines: this.mode === 'sprint' ? 40 : 0,
+        targetScore: this.mode === 'puzzle' ? this.level?.scoreTarget : undefined,
         levelName: this.level?.name,
       },
       () => this.togglePause(),
@@ -256,11 +258,12 @@ export class GameScene extends Phaser.Scene {
       arrMs: Math.max(0, this.settings.arrMs),
     }
     if (this.mode === 'puzzle' && this.level) {
+      // A Journey level is an endless score chase: normal seven-bag queue, the
+      // level's stone layout, and a score target that ends the run in a win.
       return {
         ...base,
         board: this.level.board,
-        queue: this.level.sequence,
-        linesTarget: this.level.linesTarget,
+        scoreTarget: this.level.scoreTarget,
         lockDelayMs: 700,
         maxLockResets: 20,
       }
@@ -512,8 +515,14 @@ export class GameScene extends Phaser.Scene {
 
     if (this.mode === 'puzzle' && this.level) {
       if (won) {
-        stars = puzzleStars(engine.elapsedMs, { goldMs: this.level.goldMs, parMs: this.level.parMs })
-        this.progress = recordJourneyLevel(this.progress, this.level, stars, engine.elapsedMs)
+        stars = puzzleStars(engine.score, this.level)
+        this.progress = recordJourneyLevel(this.progress, this.level, {
+          stars,
+          elapsedMs: engine.elapsedMs,
+          score: engine.score,
+          lines: engine.lines,
+          pieces: engine.pieces,
+        })
         nextLevelId = nextLevel(this.level)?.id
         newBest = stars > previousStars
       }
@@ -561,6 +570,7 @@ export class GameScene extends Phaser.Scene {
       stars,
       levelId: this.level?.id,
       levelName: this.level?.name,
+      targetScore: this.level?.scoreTarget,
       nextLevelId,
       previousBest,
       newBest,

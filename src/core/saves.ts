@@ -339,20 +339,28 @@ export function recordRun(progress: Progress, run: RunSummary): Progress {
   return next
 }
 
-export function recordJourneyLevel(progress: Progress, level: PuzzleLevel, stars: number, elapsedMs: number): Progress {
+export interface JourneyRunSummary {
+  stars: number
+  elapsedMs: number
+  score: number
+  lines: number
+  pieces: number
+}
+
+export function recordJourneyLevel(progress: Progress, level: PuzzleLevel, run: JourneyRunSummary): Progress {
   const next = sanitizeProgress(progress)
-  next.journey.stars[level.id] = Math.max(next.journey.stars[level.id] ?? 0, stars)
+  next.journey.stars[level.id] = Math.max(next.journey.stars[level.id] ?? 0, run.stars)
   const previous = next.journey.bestMs[level.id]
   next.journey.bestMs[level.id] =
-    previous === undefined ? Math.round(elapsedMs) : Math.min(previous, Math.round(elapsedMs))
+    previous === undefined ? Math.round(run.elapsedMs) : Math.min(previous, Math.round(run.elapsedMs))
   const global = globalIndexFor(level)
   next.journey.unlocked = Math.max(next.journey.unlocked, Math.min(TOTAL_LEVELS, global + 1))
   next.stats.journeyLevels = Object.keys(next.journey.stars).length
   next.stats.stars = Object.values(next.journey.stars).reduce((sum, value) => sum + value, 0)
   // Journey runs also add to the lifetime line/piece totals.
   next.stats.games += 1
-  next.stats.lines += level.linesTarget
-  next.stats.pieces += level.sequence.length
+  next.stats.lines += run.lines
+  next.stats.pieces += run.pieces
   evaluateAchievements(next)
   saveProgress(next)
   return next

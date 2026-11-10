@@ -99,6 +99,7 @@ export class StackstormEngine {
   private readonly fixedQueue: boolean
   private readonly startLevel: number
   private readonly linesTarget: number | null
+  private readonly scoreTarget: number | null
   private readonly timeLimitMs: number | null
   private readonly gravityOverride: number | null
   private readonly lockDelayMs: number
@@ -139,6 +140,7 @@ export class StackstormEngine {
     this.startLevel = options.startLevel ?? 1
     this.level = this.startLevel
     this.linesTarget = options.linesTarget ?? null
+    this.scoreTarget = options.scoreTarget ?? null
     this.timeLimitMs = options.timeLimitMs ?? null
     this.timeRemainingMs = this.timeLimitMs
 
@@ -291,7 +293,7 @@ export class StackstormEngine {
   }
 
   holdPiece(): boolean {
-    if (this.mode === 'puzzle' || !this.canAct() || !this.active || this.holdUsed) return false
+    if (!this.canAct() || !this.active || this.holdUsed) return false
     const current = this.active.id
     const swapped = this.hold
     this.hold = current
@@ -603,11 +605,19 @@ export class StackstormEngine {
   }
 
   private goalReached(): boolean {
-    if (this.linesTarget === null) return false
-    if (this.lines < this.linesTarget) return false
-    this.status = 'won'
-    this.events.push({ type: 'win', reason: this.mode === 'puzzle' ? 'objective' : 'lines' })
-    return true
+    if (this.linesTarget !== null && this.lines >= this.linesTarget) {
+      this.status = 'won'
+      this.events.push({ type: 'win', reason: this.mode === 'puzzle' ? 'objective' : 'lines' })
+      return true
+    }
+    // Journey levels are score chases: reaching the target ends the run as a
+    // win, and topping out before it ends the run as a loss.
+    if (this.scoreTarget !== null && this.score >= this.scoreTarget) {
+      this.status = 'won'
+      this.events.push({ type: 'win', reason: 'objective' })
+      return true
+    }
+    return false
   }
 
   private endGame(reason: 'blockout' | 'time' | 'pieces'): void {

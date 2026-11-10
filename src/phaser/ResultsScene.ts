@@ -99,13 +99,18 @@ export class ResultsScene extends Phaser.Scene {
           }),
         )
       } else {
-        root.add(display(this, DESIGN_W / 2, 288, `${data.lines}/${levelById(data.levelId ?? '')?.linesTarget ?? 0}`, 42, theme.ui.text, 0.5))
-        root.add(label(this, DESIGN_W / 2, 330, 'LINES CLEARED', 11, theme.ui.muted, { origin: 0.5, letterSpacing: 1.4 }))
+        root.add(display(this, DESIGN_W / 2, 288, formatNumber(data.score), 42, theme.ui.text, 0.5))
+        root.add(
+          label(this, DESIGN_W / 2, 330, `OF ${formatNumber(data.targetScore ?? 0)} POINTS`, 11, theme.ui.muted, {
+            origin: 0.5,
+            letterSpacing: 1.4,
+          }),
+        )
       }
-      this.statRow(root, 362, 'TIME', formatClock(data.elapsedMs), theme)
-      this.statRow(root, 402, 'PIECES PLACED', `${data.pieces}`, theme)
-      this.statRow(root, 442, 'BEST COMBO', `×${data.maxCombo}`, theme)
-      this.statRow(root, 482, 'FOUR-LINE CLEARS', `${data.fourLines}`, theme)
+      this.statRow(root, 362, 'SCORE', formatNumber(data.score), theme)
+      this.statRow(root, 402, 'TARGET', formatNumber(data.targetScore ?? 0), theme)
+      this.statRow(root, 442, 'LINES CLEARED', `${data.lines}`, theme)
+      this.statRow(root, 482, 'TIME', formatClock(data.elapsedMs), theme)
     } else {
       const bigValue =
         data.mode === 'sprint' && data.won

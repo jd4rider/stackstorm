@@ -102,13 +102,13 @@ describe('save data', () => {
   it('unlocks the next level and totals stars', () => {
     let progress = defaultProgress()
     const level = levelAt(1)!
-    progress = recordJourneyLevel(progress, level, 2, 12_000)
+    progress = recordJourneyLevel(progress, level, { stars: 2, elapsedMs: 12_000, score: 1_500, lines: 8, pieces: 40 })
     expect(progress.journey.unlocked).toBe(2)
     expect(progress.journey.stars[level.id]).toBe(2)
     expect(progress.stats.stars).toBe(2)
     expect(progress.stats.journeyLevels).toBe(1)
     // A worse replay cannot lower the saved rating or best time.
-    progress = recordJourneyLevel(progress, level, 1, 20_000)
+    progress = recordJourneyLevel(progress, level, { stars: 1, elapsedMs: 20_000, score: 900, lines: 4, pieces: 25 })
     expect(progress.journey.stars[level.id]).toBe(2)
     expect(progress.journey.bestMs[level.id]).toBe(12_000)
   })
