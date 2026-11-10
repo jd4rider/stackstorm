@@ -90,6 +90,7 @@ export class BoardRenderer {
   private highContrast = false
   private cellSize = 0
   private wells: number[] = []
+  private stoneTexture: string | null = null
 
   constructor(scene: Phaser.Scene, theme: Theme, layout: GameLayout) {
     this.scene = scene
@@ -136,6 +137,13 @@ export class BoardRenderer {
    */
   setWells(columns: number[]): void {
     this.wells = columns
+  }
+
+  /** Swap in a world-specific stone texture for puzzle walls. */
+  setStone(texture: string): void {
+    if (this.stoneTexture === texture) return
+    this.stoneTexture = texture
+    this.lastValues.fill(-1)
   }
 
   setTheme(theme: Theme): void {
@@ -248,16 +256,16 @@ export class BoardRenderer {
       for (const column of this.wells) {
         const x = column * cell
         for (let index = 0; index < bands; index += 1) {
-          const alpha = (0.02 + 0.11 * (index / (bands - 1))) * (0.6 + 0.4 * pulse)
+          const alpha = (0.05 + 0.16 * (index / (bands - 1))) * (0.65 + 0.35 * pulse)
           this.wellGlow.fillStyle(accent, alpha)
           this.wellGlow.fillRect(x + 2, (index * this.layout.boardH) / bands, cell - 4, this.layout.boardH / bands + 1)
         }
-        this.wellGlow.lineStyle(2, accent, 0.16 + 0.24 * pulse)
+        this.wellGlow.lineStyle(2, accent, 0.32 + 0.3 * pulse)
         this.wellGlow.lineBetween(x + 1, 2, x + 1, this.layout.boardH - 2)
         this.wellGlow.lineBetween(x + cell - 1, 2, x + cell - 1, this.layout.boardH - 2)
         // Chevrons slide down the lane so the drop target is unmistakable.
         const offset = (this.scene.time.now / 11) % (cell * 0.9)
-        this.wellGlow.lineStyle(2.5, accent, 0.4 + 0.4 * pulse)
+        this.wellGlow.lineStyle(2.5, accent, 0.55 + 0.35 * pulse)
         for (let index = 0; index < 3; index += 1) {
           const y = 10 + offset + index * cell * 0.9
           if (y > this.layout.boardH - cell * 0.4) continue
@@ -281,7 +289,9 @@ export class BoardRenderer {
           if (value === 0) {
             image.setVisible(false)
           } else {
-            image.setTexture(blockKey(this.theme.id, value))
+            image.setTexture(
+              value === 8 && this.stoneTexture ? this.stoneTexture : blockKey(this.theme.id, value),
+            )
             image.setVisible(true)
           }
         }

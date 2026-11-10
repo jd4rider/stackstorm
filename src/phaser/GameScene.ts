@@ -1,5 +1,6 @@
 import Phaser from 'phaser'
 import { themeById, type Theme } from '../config/themes'
+import { worldById } from '../data/worlds'
 import { sound } from '../core/audio'
 import { loadProgress, recordJourneyLevel, recordRun, type Progress, type Settings } from '../core/saves'
 import { StackstormEngine } from '../engine/engine'
@@ -15,6 +16,7 @@ import { Hud } from './Hud'
 import { TouchControls, type ControlAction } from './TouchControls'
 import { backdrop, button, fadeIn, fadeTo, label, panel, display } from './common'
 import { computeLayout, isCoarsePointer, type GameLayout } from './layout'
+import { ensureStoneTexture } from './textures'
 
 export interface GameData {
   mode: GameMode
@@ -113,6 +115,13 @@ export class GameScene extends Phaser.Scene {
     this.boardRenderer = new BoardRenderer(this, this.theme, this.layout)
     this.boardRenderer.setHighContrast(this.settings.highContrast)
     this.boardRenderer.setWells(this.wellColumns())
+    if (this.mode === 'puzzle' && this.level) {
+      // Every world builds its walls from its own rock.
+      const world = worldById(this.level.world)
+      this.boardRenderer.setStone(
+        ensureStoneTexture(this, this.theme, world.id, Phaser.Display.Color.HexStringToColor(world.stone).color),
+      )
+    }
     this.effects = new EffectsManager(
       this,
       this.theme,
@@ -145,6 +154,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     if (this.settings.gestures) this.installGestures()
+    this.showLevelHint()
 
     const keyboard = this.input.keyboard
     if (keyboard) {
@@ -180,6 +190,50 @@ export class GameScene extends Phaser.Scene {
       if (this.level.board.every((row) => (row[column] ?? 0) === 0)) columns.push(column)
     }
     return columns
+  }
+
+  /** A short, non-blocking nudge on the opening Journey levels. */
+  private showLevelHint(): void {
+    if (!this.level || this.level.world !== 1 || this.level.index > 3) return
+    const lanes = this.wellColumns().length
+    const text =
+      lanes <= 1
+        ? 'SPIN THE I, THEN DROP IT IN THE LIT LANE'
+        : 'FILL EVERY LIT LANE WITH A VERTICAL I'
+    const width = Math.min(this.layout.boardW - 18, 320)
+    const height = 58
+    const accent = Phaser.Display.Color.HexStringToColor(this.theme.ui.accent).color
+    const overlay = this.add
+      .container(
+        this.layout.boardX + (this.layout.boardW - width) / 2,
+        this.layout.boardY + this.layout.boardH * 0.34,
+      )
+      .setDepth(45)
+    overlay.add(
+      panel(this, 0, 0, width, height, {
+        fill: 0x0b1428,
+        side: 0x05070f,
+        raised: 4,
+        radius: 16,
+        stroke: accent,
+        strokeAlpha: 0.55,
+      }),
+    )
+    overlay.add(
+      label(this, width / 2, 11, 'HINT', 9, this.theme.ui.accent, {
+        origin: 0.5,
+        fontStyle: 'bold',
+        letterSpacing: 1.8,
+      }),
+    )
+    overlay.add(label(this, width / 2, 31, text, 11, this.theme.ui.text, { origin: 0.5, align: 'center' }))
+    this.tweens.add({
+      targets: overlay,
+      alpha: 0,
+      duration: 700,
+      delay: 5200,
+      onComplete: () => overlay.destroy(true),
+    })
   }
 
   private engineOptions(seed: number): ConstructorParameters<typeof StackstormEngine>[0] {

@@ -79,10 +79,11 @@ function drawBlock(
   value: number,
   key: string,
   style: Theme['style'],
+  colorOverride?: number,
 ): void {
   const graphics = scene.make.graphics({ x: 0, y: 0 }, false)
   const id = PIECE_IDS[value - 1] as PieceId | undefined
-  const color = id ? theme.pieces[id] : theme.stone
+  const color = colorOverride ?? (id ? theme.pieces[id] : theme.stone)
   const radius = style === 'pixel' ? 0 : 12
   const inset = 3
 
@@ -132,7 +133,7 @@ function drawBlock(
 
   if (value === 8) {
     // Stone: a couple of quiet cracks instead of a piece symbol.
-    graphics.lineStyle(1.5, darken(theme.stone, 0.5), 0.7)
+    graphics.lineStyle(1.5, darken(color, 0.5), 0.7)
     graphics.beginPath()
     graphics.moveTo(20, 18)
     graphics.lineTo(28, 30)
@@ -201,6 +202,22 @@ export function buildTextures(scene: Phaser.Scene, themes: Theme[], onProgress?:
     done += 1
     if (onProgress) onProgress(done, total)
   }
+}
+
+export function stoneKey(worldId: number): string {
+  return `ss-stone-world-${worldId}`
+}
+
+/** Bake one stone wall texture per world so each world reads as its own rock. */
+export function ensureStoneTexture(
+  scene: Phaser.Scene,
+  theme: Theme,
+  worldId: number,
+  color: number,
+): string {
+  const key = stoneKey(worldId)
+  if (!scene.textures.exists(key)) drawBlock(scene, theme, 8, key, theme.style, color)
+  return key
 }
 
 export function pieceColor(theme: Theme, id: PieceId): number {
