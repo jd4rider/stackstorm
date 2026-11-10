@@ -87,13 +87,14 @@ blocking a well, then drop the I pieces.
 
 | Action | Keyboard | Touch |
 | --- | --- | --- |
-| Move | ← → (DAS/ARR) | hold ◀ / ▶ |
-| Soft drop | ↓ | hold ▼ |
+| Move | ← → or A D (DAS/ARR) | hold ◀ / ▶ |
+| Soft drop | ↓ or S | hold ▼ |
 | Hard drop | Space | ⤓ |
-| Rotate CW / CCW | ↑ or X / Z | ↻ / ↺ |
+| Rotate CW | ↑ or W (X also works) | ↻ (tap the board) |
+| Rotate CCW | Z | — |
 | Hold | C or Shift | HOLD |
 | Pause | Esc or P | pause icon |
-| Storm Surge | S | SURGE button when ready |
+| Storm Surge | F | SURGE button when ready |
 
 The default touch layout is a two-row pad with large targets and press-and-hold
 repeat. An optional gesture mode uses a tap to rotate, a horizontal swipe to

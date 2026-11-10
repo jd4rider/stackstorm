@@ -76,26 +76,26 @@ export class HelpScene extends Phaser.Scene {
 
     root.add(label(this, 58, 406, 'CONTROLS', 12, theme.ui.accent, { fontStyle: 'bold', letterSpacing: 1.6 }))
     const controls = [
-      ['← →', 'Move · hold to repeat'],
-      ['↓', 'Soft drop'],
+      ['← → / A D', 'Move · hold to repeat'],
+      ['↓ / S', 'Soft drop'],
       ['SPACE', 'Hard drop'],
-      ['↑ / X', 'Rotate'],
+      ['↑ / W', 'Rotate'],
       ['C / SHIFT', 'Hold a piece'],
       ['ESC / P', 'Pause'],
-      ['S', 'Activate Storm Surge'],
+      ['F', 'Activate Storm Surge'],
       ['TAP', 'Rotate the piece'],
     ]
     controls.forEach(([key, meaning], index) => {
       const column = index % 2
       const row = Math.floor(index / 2)
-      const x = 58 + column * 306
+      const x = 58 + column * 310
       const y = 432 + row * 34
       const pill = this.add.graphics()
       pill.fillStyle(0x1a2748, 1)
-      pill.fillRoundedRect(x, y, 86, 24, 7)
+      pill.fillRoundedRect(x, y, 92, 24, 7)
       root.add(pill)
-      root.add(label(this, x + 43, y + 12, key, 10, theme.ui.text, { origin: 0.5, fontStyle: 'bold' }))
-      root.add(label(this, x + 98, y + 11, meaning, 10, theme.ui.muted))
+      root.add(label(this, x + 46, y + 12, key, 10, theme.ui.text, { origin: 0.5, fontStyle: 'bold' }))
+      root.add(label(this, x + 104, y + 11, meaning, 10, theme.ui.muted))
     })
 
     root.add(label(this, 58, 588, 'SCORING', 12, theme.ui.accent, { fontStyle: 'bold', letterSpacing: 1.6 }))

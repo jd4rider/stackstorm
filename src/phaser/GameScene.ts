@@ -116,7 +116,9 @@ export class GameScene extends Phaser.Scene {
 
     backdrop(this, this.theme)
     this.input.addPointer(3)
-    this.input.keyboard?.addCapture('SPACE,UP,DOWN,LEFT,RIGHT')
+    // WASD is a second, equally supported set, so the page never scrolls on a
+    // keyboard play session either.
+    this.input.keyboard?.addCapture('SPACE,UP,DOWN,LEFT,RIGHT,W,A,S,D')
 
     const showTouch = isCoarsePointer() && this.settings.touchButtons && !this.settings.gestures
     this.layout = computeLayout(this.scale.width, this.scale.height, showTouch)
@@ -184,7 +186,11 @@ export class GameScene extends Phaser.Scene {
         shift: 'SHIFT',
         escape: 'ESC',
         p: 'P',
+        a: 'A',
+        d: 'D',
         s: 'S',
+        w: 'W',
+        f: 'F',
         enter: 'ENTER',
       }) as Record<string, Phaser.Input.Keyboard.Key>
     }
@@ -363,22 +369,26 @@ export class GameScene extends Phaser.Scene {
     }
     if (this.paused || this.finished) return
 
-    const left = this.keys.left.isDown
-    const right = this.keys.right.isDown
+    const left = this.keys.left.isDown || this.keys.a.isDown
+    const right = this.keys.right.isDown || this.keys.d.isDown
     const direction: -1 | 0 | 1 = left && !right ? -1 : right && !left ? 1 : 0
     if (direction !== this.lastDirection) {
       this.lastDirection = direction
       this.engine.setDirection(direction)
     }
 
-    const soft = this.keys.down.isDown
+    const soft = this.keys.down.isDown || this.keys.s.isDown
     if (soft !== this.softDown) {
       this.softDown = soft
       this.engine.setSoftDrop(soft)
     }
 
     if (Phaser.Input.Keyboard.JustDown(this.keys.space)) this.engine.hardDrop()
-    if (Phaser.Input.Keyboard.JustDown(this.keys.up) || Phaser.Input.Keyboard.JustDown(this.keys.x)) {
+    if (
+      Phaser.Input.Keyboard.JustDown(this.keys.up) ||
+      Phaser.Input.Keyboard.JustDown(this.keys.w) ||
+      Phaser.Input.Keyboard.JustDown(this.keys.x)
+    ) {
       if (this.engine.rotate(1)) sound.rotate()
     }
     if (Phaser.Input.Keyboard.JustDown(this.keys.z)) {
@@ -387,7 +397,8 @@ export class GameScene extends Phaser.Scene {
     if (Phaser.Input.Keyboard.JustDown(this.keys.c) || Phaser.Input.Keyboard.JustDown(this.keys.shift)) {
       if (this.engine.holdPiece()) sound.hold()
     }
-    if (Phaser.Input.Keyboard.JustDown(this.keys.s)) this.activateStorm()
+    // S is soft drop now, so Storm Surge moved to F.
+    if (Phaser.Input.Keyboard.JustDown(this.keys.f)) this.activateStorm()
     if (Phaser.Input.Keyboard.JustDown(this.keys.enter) && this.engine.status === 'over') this.finish(false)
   }
 
