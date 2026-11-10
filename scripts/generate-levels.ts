@@ -72,8 +72,12 @@ function makeCandidate(world: number, index: number, decoys: number, seed: numbe
   const width = wide ? 2 : 1
 
   const wells: { base: number; width: number }[] = []
-  const firstBase = 1 + Math.floor(random() * (10 - width - 1))
-  wells.push({ base: Math.min(8 - width, Math.max(0, firstBase)), width })
+  // Walk a fixed pattern of well positions instead of rolling each one: a step
+  // of five through the available slots visits every column before repeating,
+  // so neighbouring levels never end up as the same board.
+  const slots = 10 - width
+  const firstBase = ((index - 1) * 5 + world * 2) % slots
+  wells.push({ base: firstBase, width })
   if (twoWells) {
     const secondWidth = random() < 0.5 ? 1 : width
     let secondBase = 1 + Math.floor(random() * (10 - secondWidth - 1))
@@ -157,7 +161,19 @@ export function replaySolution(level: PuzzleLevel): boolean {
 
 function buildLevel(world: number, index: number): PuzzleLevel {
   const baseSeed = world * 100_000 + index * 977
-  const decoyWave = world <= 1 ? 0 : Math.min(4, Math.floor(world / 2) + (index > 30 ? 1 : 0))
+  // Level one teaches the well with a single I piece; from level two on the
+  // sequence carries coloured decoys so the early game is not fifty levels of
+  // one pale piece.
+  const decoyWave =
+    world === 1
+      ? index <= 1
+        ? 0
+        : index <= 20
+          ? 1
+          : index <= 35
+            ? 2
+            : 3
+      : Math.min(5, Math.floor(world / 2) + (index > 30 ? 1 : 0))
   for (let attempt = 0; attempt < 12; attempt += 1) {
     const decoys = attempt === 0 ? decoyWave : Math.max(0, decoyWave - Math.floor(attempt / 3))
     const candidate = makeCandidate(world, index, decoys, baseSeed + attempt * 7919)

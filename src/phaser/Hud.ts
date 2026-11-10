@@ -2,8 +2,8 @@ import Phaser from 'phaser'
 import type { Theme } from '../config/themes'
 import type { StackstormEngine } from '../engine/engine'
 import type { GameMode } from '../engine/types'
-import { formatClock, formatNumber, label, panel } from './common'
-import type { GameLayout } from './layout'
+import { drawPanel, formatClock, formatNumber, label } from './common'
+import type { GameLayout, Rect } from './layout'
 import { PiecePreview } from './BoardRenderer'
 
 export interface HudInfo {
@@ -28,6 +28,8 @@ export class Hud {
   private readonly nextLabel: Phaser.GameObjects.Text
   private readonly holdPanel: Phaser.GameObjects.Container
   private readonly nextPanel: Phaser.GameObjects.Container
+  private readonly holdArt: Phaser.GameObjects.Graphics
+  private readonly nextArt: Phaser.GameObjects.Graphics
   private readonly holdPreview: PiecePreview
   private readonly nextPreviews: PiecePreview[] = []
   private readonly stormBar: Phaser.GameObjects.Graphics
@@ -65,8 +67,14 @@ export class Hud {
     this.comboText = label(scene, 0, 0, '', 20, accent, { origin: 0.5, fontStyle: 'bold', alpha: 0 })
     this.holdLabel = label(scene, 0, 0, 'HOLD', 9, theme.ui.muted, { fontStyle: 'bold', letterSpacing: 1 })
     this.nextLabel = label(scene, 0, 0, 'NEXT', 11, theme.ui.accent, { fontStyle: 'bold', letterSpacing: 1.4 })
-    this.holdPanel = panel(scene, 0, 0, 10, 10, { radius: 12, fill: 0x0b1226, side: 0x05070f, raised: 2, strokeAlpha: 0.15 })
-    this.nextPanel = panel(scene, 0, 0, 10, 10, { radius: 12, fill: 0x0b1226, side: 0x05070f, raised: 2, strokeAlpha: 0.15 })
+    // The panel art is redrawn at the real HOLD/NEXT size on every layout
+    // change. A fixed 10x10 panel left the labels floating over the board.
+    this.holdPanel = scene.add.container(0, 0)
+    this.nextPanel = scene.add.container(0, 0)
+    this.holdArt = scene.add.graphics()
+    this.nextArt = scene.add.graphics()
+    this.holdPanel.add(this.holdArt)
+    this.nextPanel.add(this.nextArt)
     this.holdPreview = new PiecePreview(scene, this.holdPanel, 12)
     for (let index = 0; index < 5; index += 1) this.nextPreviews.push(new PiecePreview(scene, this.nextPanel, 10))
     this.stormBar = scene.add.graphics()
@@ -91,6 +99,21 @@ export class Hud {
     this.buildPauseButton()
     this.buildSurgeButton()
     this.setLayout(layout)
+  }
+
+  private paintPanels(hold: Rect, next: Rect): void {
+    const paint = (art: Phaser.GameObjects.Graphics, rect: Rect): void => {
+      art.clear()
+      drawPanel(art, rect.w, rect.h, {
+        radius: 12,
+        fill: 0x0b1226,
+        side: 0x05070f,
+        raised: 2,
+        strokeAlpha: 0.15,
+      })
+    }
+    paint(this.holdArt, hold)
+    paint(this.nextArt, next)
   }
 
   private buildPauseButton(): void {
@@ -143,6 +166,7 @@ export class Hud {
 
   setLayout(layout: GameLayout): void {
     this.layout = layout
+    this.paintPanels(layout.hold, layout.next)
     const portrait = layout.portrait
     if (portrait) {
       this.scoreText.setPosition(layout.width / 2, 18)

@@ -23,23 +23,25 @@ const SPECS: Record<'row1' | 'row2' | 'portrait' | 'landscape', ControlSpec[]> =
     { action: 'soft', glyph: '\u25BC', label: 'SOFT' },
     { action: 'right', glyph: '\u2192', label: 'MOVE' },
   ],
+  // The two arrows sit at the far ends of the strip so a thumb on either side
+  // of the phone always finds a move button without looking.
   portrait: [
     { action: 'left', glyph: '\u2190', label: 'MOVE' },
-    { action: 'right', glyph: '\u2192', label: 'MOVE' },
     { action: 'soft', glyph: '\u25BC', label: 'SOFT' },
     { action: 'ccw', glyph: '\u21BA', label: 'SPIN' },
-    { action: 'cw', glyph: '\u21BB', label: 'SPIN' },
     { action: 'drop', glyph: '\u21E9', label: 'DROP' },
+    { action: 'cw', glyph: '\u21BB', label: 'SPIN' },
     { action: 'hold', glyph: '\u21C4', label: 'HOLD' },
+    { action: 'right', glyph: '\u2192', label: 'MOVE' },
   ],
   landscape: [
     { action: 'left', glyph: '\u2190', label: 'MOVE' },
-    { action: 'right', glyph: '\u2192', label: 'MOVE' },
     { action: 'soft', glyph: '\u25BC', label: 'SOFT' },
     { action: 'ccw', glyph: '\u21BA', label: 'SPIN' },
-    { action: 'cw', glyph: '\u21BB', label: 'SPIN' },
     { action: 'drop', glyph: '\u21E9', label: 'DROP' },
+    { action: 'cw', glyph: '\u21BB', label: 'SPIN' },
     { action: 'hold', glyph: '\u21C4', label: 'HOLD' },
+    { action: 'right', glyph: '\u2192', label: 'MOVE' },
   ],
 }
 

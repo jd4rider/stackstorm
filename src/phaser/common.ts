@@ -209,20 +209,16 @@ export interface PanelOptions {
   highlight?: boolean
 }
 
-export function panel(
-  scene: Phaser.Scene,
-  x: number,
-  y: number,
+export function drawPanel(
+  graphics: Phaser.GameObjects.Graphics,
   width: number,
   height: number,
   options: PanelOptions = {},
-): Phaser.GameObjects.Container {
+): void {
   const radius = options.radius ?? 22
   const raised = options.raised ?? 5
   const fill = options.fill ?? 0x111a38
   const side = options.side ?? 0x090d1c
-  const container = scene.add.container(x, y)
-  const graphics = scene.add.graphics()
   if (options.shadow !== false) {
     graphics.fillStyle(0x000000, 0.3)
     graphics.fillRoundedRect(3, raised + 5, width, height, radius)
@@ -237,6 +233,19 @@ export function panel(
   }
   graphics.lineStyle(1.5, options.stroke ?? 0xffffff, options.strokeAlpha ?? 0.12)
   graphics.strokeRoundedRect(1, 1, width - 2, height - 2, radius)
+}
+
+export function panel(
+  scene: Phaser.Scene,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  options: PanelOptions = {},
+): Phaser.GameObjects.Container {
+  const container = scene.add.container(x, y)
+  const graphics = scene.add.graphics()
+  drawPanel(graphics, width, height, options)
   container.add(graphics)
   return container
 }

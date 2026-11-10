@@ -65,9 +65,10 @@ export function computeLayout(width: number, height: number, showTouch: boolean)
     let touch: TouchLayout | null = null
     if (showTouch) {
       const pad = 6
-      // The arcade account bubble sits in the bottom-left corner; leave that
-      // gutter free so the MOVE button is never covered.
-      const gutter = 64
+      // The arcade account bubble sits in the very bottom-left corner, under
+      // the strip. A small gutter keeps the left arrow clear of it while still
+      // putting the arrows at opposite ends of the screen.
+      const gutter = 56
       touch = {
         row1: buttonRow(7, gutter, height - controls + pad, width - gutter - pad, controls - pad * 2, 5),
         row2: [],

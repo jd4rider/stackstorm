@@ -68,9 +68,20 @@ describe('puzzle catalogue', () => {
     }
   })
 
-  it('is solvable in world one without using any decoy', () => {
-    for (const level of levelsForWorld(1).slice(0, 25)) {
-      expect(level.sequence.filter((id) => id !== 'I').length).toBe(0)
+  it('teaches the well with a single I piece before adding decoys', () => {
+    expect(levelsForWorld(1)[0]!.sequence).toEqual(['I'])
+    for (const level of levelsForWorld(1).slice(1, 25)) {
+      expect(level.sequence.some((id) => id !== 'I'), level.id).toBe(true)
+    }
+  })
+
+  it('never repeats the previous board back to back', () => {
+    for (let world = 1; world <= 10; world += 1) {
+      const levels = levelsForWorld(world)
+      for (let index = 1; index < levels.length; index += 1) {
+        const previous = JSON.stringify(levels[index - 1]!.board)
+        expect(JSON.stringify(levels[index]!.board), levels[index]!.id).not.toBe(previous)
+      }
     }
   })
 

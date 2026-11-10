@@ -5,7 +5,7 @@ import type { StackstormEngine } from '../engine/engine'
 import { SHAPES } from '../engine/pieces'
 import { PIECE_INDEX, type PieceId } from '../engine/types'
 import type { GameLayout } from './layout'
-import { SPARK_KEY, blockKey, darken, ghostKey, mixHex } from './textures'
+import { SPARK_KEY, blockKey, ghostKey, mixHex } from './textures'
 
 export class PiecePreview {
   private readonly container: Phaser.GameObjects.Container
@@ -145,9 +145,12 @@ export class BoardRenderer {
     const accent = Phaser.Display.Color.HexStringToColor(this.theme.ui.accent).color
     const accent2 = Phaser.Display.Color.HexStringToColor(this.theme.ui.accent2).color
     const danger = Phaser.Display.Color.HexStringToColor(this.theme.ui.danger).color
-    const panel = Phaser.Display.Color.HexStringToColor(this.theme.ui.panel).color
-    const top = mixHex(panel, accent, 0.1)
-    const bottom = darken(panel, 0.5)
+    const gridColor = Phaser.Display.Color.HexStringToColor(this.theme.ui.grid).color
+    // Keep the well itself a deep neutral navy: tinting it with the theme accent
+    // turned the whole screen one green-teal shade and swallowed the seven
+    // piece colours. The accent now lives in the frame, rails and glow only.
+    const top = mixHex(0x18213c, 0x0a0f1e, 0.35)
+    const bottom = 0x050810
     this.background.clear()
 
     // Soft neon bloom around the well.
@@ -170,12 +173,12 @@ export class BoardRenderer {
     for (let row = 0; row < 20; row += 1) {
       for (let column = 0; column < 10; column += 1) {
         if ((row + column) % 2 !== 0) continue
-        this.background.fillStyle(accent, this.highContrast ? 0.07 : 0.035)
+        this.background.fillStyle(0xffffff, this.highContrast ? 0.06 : 0.022)
         this.background.fillRect(column * cell + 1, row * cell + 1, cell - 2, cell - 2)
       }
     }
 
-    this.background.lineStyle(1, accent, this.highContrast ? 0.42 : 0.2)
+    this.background.lineStyle(1, gridColor, this.highContrast ? 0.95 : 0.8)
     for (let column = 1; column < 10; column += 1) {
       this.background.lineBetween(column * cell, 0, column * cell, boardH)
     }

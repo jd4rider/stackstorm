@@ -164,7 +164,7 @@ export class MenuScene extends Phaser.Scene {
       }),
     )
     root.add(
-      label(this, DESIGN_W / 2, DESIGN_H - 24, 'v1.0.0  ·  MADE FOR LITTLE JOY ARCADE', 9, theme.ui.muted, {
+      label(this, DESIGN_W / 2, DESIGN_H - 24, 'v1.0.2  ·  MADE FOR LITTLE JOY ARCADE', 9, theme.ui.muted, {
         origin: 0.5,
         alpha: 0.65,
         letterSpacing: 1,
