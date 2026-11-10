@@ -164,16 +164,20 @@ function buildLevel(world: number, index: number): PuzzleLevel {
   // Level one teaches the well with a single I piece; from level two on the
   // sequence carries coloured decoys so the early game is not fifty levels of
   // one pale piece.
+  // Early levels carry several decoys so the board shows the whole palette
+  // (green, gold, red, blue) instead of two lonely colours.
   const decoyWave =
     world === 1
       ? index <= 1
         ? 0
-        : index <= 20
-          ? 1
-          : index <= 35
-            ? 2
-            : 3
-      : Math.min(5, Math.floor(world / 2) + (index > 30 ? 1 : 0))
+        : index <= 8
+          ? 2
+          : index <= 20
+            ? 3
+            : index <= 35
+              ? 4
+              : 5
+      : Math.min(6, 1 + Math.floor(world / 2) + (index > 30 ? 1 : 0))
   for (let attempt = 0; attempt < 12; attempt += 1) {
     const decoys = attempt === 0 ? decoyWave : Math.max(0, decoyWave - Math.floor(attempt / 3))
     const candidate = makeCandidate(world, index, decoys, baseSeed + attempt * 7919)

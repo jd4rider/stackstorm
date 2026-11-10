@@ -87,23 +87,25 @@ export class ResultsScene extends Phaser.Scene {
     root.add(card)
 
     if (isPuzzle) {
+      // Stars (or the line counter) own the top of the card; the stat rows
+      // start below them so nothing overlaps.
       if (data.won) {
-        root.add(starRow(this, DESIGN_W / 2, 292, data.stars, 46, 3, true))
+        root.add(starRow(this, DESIGN_W / 2, 286, data.stars, 42, 3, true))
         root.add(
-          label(this, DESIGN_W / 2, 340, data.newBest ? 'NEW BEST RATING' : `BEST ${data.previousStars} STAR${data.previousStars === 1 ? '' : 'S'}`, 11, data.newBest ? theme.ui.accent : theme.ui.muted, {
+          label(this, DESIGN_W / 2, 328, data.newBest ? 'NEW BEST RATING' : `BEST ${data.previousStars} STAR${data.previousStars === 1 ? '' : 'S'}`, 11, data.newBest ? theme.ui.accent : theme.ui.muted, {
             origin: 0.5,
             fontStyle: 'bold',
             letterSpacing: 1.4,
           }),
         )
       } else {
-        root.add(display(this, DESIGN_W / 2, 306, `${data.lines}/${levelById(data.levelId ?? '')?.linesTarget ?? 0}`, 44, theme.ui.text, 0.5))
-        root.add(label(this, DESIGN_W / 2, 342, 'LINES CLEARED', 11, theme.ui.muted, { origin: 0.5, letterSpacing: 1.4 }))
+        root.add(display(this, DESIGN_W / 2, 288, `${data.lines}/${levelById(data.levelId ?? '')?.linesTarget ?? 0}`, 42, theme.ui.text, 0.5))
+        root.add(label(this, DESIGN_W / 2, 330, 'LINES CLEARED', 11, theme.ui.muted, { origin: 0.5, letterSpacing: 1.4 }))
       }
-      this.statRow(root, 276, 'TIME', formatClock(data.elapsedMs), theme)
-      this.statRow(root, 316, 'PIECES PLACED', `${data.pieces}`, theme)
-      this.statRow(root, 356, 'BEST COMBO', `×${data.maxCombo}`, theme)
-      this.statRow(root, 396, 'FOUR-LINE CLEARS', `${data.fourLines}`, theme)
+      this.statRow(root, 362, 'TIME', formatClock(data.elapsedMs), theme)
+      this.statRow(root, 402, 'PIECES PLACED', `${data.pieces}`, theme)
+      this.statRow(root, 442, 'BEST COMBO', `×${data.maxCombo}`, theme)
+      this.statRow(root, 482, 'FOUR-LINE CLEARS', `${data.fourLines}`, theme)
     } else {
       const bigValue =
         data.mode === 'sprint' && data.won

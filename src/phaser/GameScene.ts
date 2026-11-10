@@ -112,6 +112,7 @@ export class GameScene extends Phaser.Scene {
 
     this.boardRenderer = new BoardRenderer(this, this.theme, this.layout)
     this.boardRenderer.setHighContrast(this.settings.highContrast)
+    this.boardRenderer.setWells(this.wellColumns())
     this.effects = new EffectsManager(
       this,
       this.theme,
@@ -169,6 +170,16 @@ export class GameScene extends Phaser.Scene {
 
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.cleanup())
     fadeIn(this)
+  }
+
+  /** Columns that are completely empty on a puzzle board: the lanes to fill. */
+  private wellColumns(): number[] {
+    if (this.mode !== 'puzzle' || !this.level) return []
+    const columns: number[] = []
+    for (let column = 0; column < 10; column += 1) {
+      if (this.level.board.every((row) => (row[column] ?? 0) === 0)) columns.push(column)
+    }
+    return columns
   }
 
   private engineOptions(seed: number): ConstructorParameters<typeof StackstormEngine>[0] {

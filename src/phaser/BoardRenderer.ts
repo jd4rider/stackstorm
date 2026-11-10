@@ -80,6 +80,7 @@ export class BoardRenderer {
   private readonly container: Phaser.GameObjects.Container
   private readonly background: Phaser.GameObjects.Graphics
   private readonly guides: Phaser.GameObjects.Graphics
+  private readonly wellGlow: Phaser.GameObjects.Graphics
   private readonly activeGlow: Phaser.GameObjects.Graphics
   private readonly cells: Phaser.GameObjects.Image[] = []
   private readonly activeCells: Phaser.GameObjects.Image[] = []
@@ -88,6 +89,7 @@ export class BoardRenderer {
   private readonly lastValues: number[] = []
   private highContrast = false
   private cellSize = 0
+  private wells: number[] = []
 
   constructor(scene: Phaser.Scene, theme: Theme, layout: GameLayout) {
     this.scene = scene
@@ -98,6 +100,8 @@ export class BoardRenderer {
     this.container.add(this.background)
     this.guides = scene.add.graphics()
     this.container.add(this.guides)
+    this.wellGlow = scene.add.graphics().setBlendMode(Phaser.BlendModes.ADD)
+    this.container.add(this.wellGlow)
     for (let index = 0; index < 10 * 20; index += 1) {
       const image = scene.add.image(0, 0, blockKey(theme.id, 1)).setOrigin(0, 0).setVisible(false)
       this.container.add(image)
@@ -124,6 +128,14 @@ export class BoardRenderer {
   setHighContrast(enabled: boolean): void {
     this.highContrast = enabled
     this.drawBackground()
+  }
+
+  /**
+   * Puzzle levels mark the empty lanes the player has to fill. Without this a
+   * wall of stone with one narrow slot reads as a dead board.
+   */
+  setWells(columns: number[]): void {
+    this.wells = columns
   }
 
   setTheme(theme: Theme): void {
@@ -228,6 +240,35 @@ export class BoardRenderer {
     }
     this.guides.clear()
     this.activeGlow.clear()
+    this.wellGlow.clear()
+    if (this.wells.length > 0) {
+      const accent = Phaser.Display.Color.HexStringToColor(this.theme.ui.accent).color
+      const pulse = 0.5 + 0.5 * Math.sin(this.scene.time.now / 320)
+      const bands = 12
+      for (const column of this.wells) {
+        const x = column * cell
+        for (let index = 0; index < bands; index += 1) {
+          const alpha = (0.02 + 0.11 * (index / (bands - 1))) * (0.6 + 0.4 * pulse)
+          this.wellGlow.fillStyle(accent, alpha)
+          this.wellGlow.fillRect(x + 2, (index * this.layout.boardH) / bands, cell - 4, this.layout.boardH / bands + 1)
+        }
+        this.wellGlow.lineStyle(2, accent, 0.16 + 0.24 * pulse)
+        this.wellGlow.lineBetween(x + 1, 2, x + 1, this.layout.boardH - 2)
+        this.wellGlow.lineBetween(x + cell - 1, 2, x + cell - 1, this.layout.boardH - 2)
+        // Chevrons slide down the lane so the drop target is unmistakable.
+        const offset = (this.scene.time.now / 11) % (cell * 0.9)
+        this.wellGlow.lineStyle(2.5, accent, 0.4 + 0.4 * pulse)
+        for (let index = 0; index < 3; index += 1) {
+          const y = 10 + offset + index * cell * 0.9
+          if (y > this.layout.boardH - cell * 0.4) continue
+          this.wellGlow.beginPath()
+          this.wellGlow.moveTo(x + cell * 0.28, y)
+          this.wellGlow.lineTo(x + cell * 0.5, y + cell * 0.22)
+          this.wellGlow.lineTo(x + cell * 0.72, y)
+          this.wellGlow.strokePath()
+        }
+      }
+    }
     this.activeGlow.setAlpha(0.82 + 0.18 * Math.sin(this.scene.time.now / 240))
     for (let row = 0; row < 20; row += 1) {
       for (let column = 0; column < 10; column += 1) {

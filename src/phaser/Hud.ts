@@ -210,7 +210,10 @@ export class Hud {
     let meta = `LV ${engine.level}  ·  ${lines} LINES`
     if (this.info.mode === 'sprint') meta = `${lines}/${target}  ·  ${formatClock(engine.elapsedMs)}`
     else if (this.info.mode === 'timeattack') meta = `${formatClock(engine.timeRemainingMs ?? 0)}  ·  ${lines} LINES`
-    else if (this.info.mode === 'puzzle') meta = `${lines}/${target}  ·  ${engine.queue.length + (engine.active ? 1 : 0)} PIECES`
+    else if (this.info.mode === 'puzzle') {
+      const left = engine.queue.length + (engine.active ? 1 : 0)
+      meta = `${lines}/${target} LINES  ·  ${left} PIECE${left === 1 ? '' : 'S'} LEFT`
+    }
     if (meta !== this.lastMeta) {
       this.lastMeta = meta
       this.metaText.setText(meta)
@@ -297,12 +300,16 @@ export class Hud {
 
     const count = this.nextPreviews.length
     if (this.layout.portrait) {
-      const spacing = Math.min(54, this.layout.next.w / count)
-      const startX = this.layout.next.w / 2 - ((count - 1) * spacing) / 2
+      // Leave room for the NEXT label on the left, then centre the queue in the
+      // rest of the panel. Cell sizes stay small enough to clear the border.
+      const left = 46
+      const usable = Math.max(40, this.layout.next.w - left - 8)
+      const spacing = Math.min(44, usable / Math.max(3, count))
+      const startX = left + usable / 2 - ((count - 1) * spacing) / 2
       this.nextPreviews.forEach((preview, index) => {
-        preview.setCell(index === 0 ? Math.min(23, this.layout.next.h * 0.5) : Math.max(8, mini * 0.82))
-        preview.show(engine.queue[index] ?? null, this.theme, index === 0 ? 1 : 0.78)
-        preview.setPosition(startX + index * spacing, this.layout.next.h / 2 + 5)
+        preview.setCell(index === 0 ? Math.min(17, this.layout.next.h * 0.4) : Math.max(7, mini * 0.78))
+        preview.show(engine.queue[index] ?? null, this.theme, index === 0 ? 1 : 0.72)
+        preview.setPosition(startX + index * spacing, this.layout.next.h / 2 + 2)
       })
       return
     }
