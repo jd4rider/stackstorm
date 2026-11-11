@@ -1,4 +1,5 @@
 import Phaser from 'phaser'
+import { openTipJar } from './support'
 import { themeById } from '../config/themes'
 import { sound } from '../core/audio'
 import { ACHIEVEMENTS } from '../core/achievements'
@@ -226,6 +227,17 @@ export class ResultsScene extends Phaser.Scene {
         }),
       )
     }
+
+    // Quiet support link: results screen only, under the actions.
+    const tipY = isPuzzle && data.won && data.nextLevelId ? actionsY + 204 : actionsY + 144
+    root.add(
+      button(this, actionX, tipY, actionWidth, 44, '☕  BUY ME A COFFEE', () => openTipJar(), {
+        fill: 0x141d33,
+        textColor: theme.ui.muted,
+        size: 12,
+        radius: 14,
+      }),
+    )
 
     root.add(
       label(this, DESIGN_W / 2, DESIGN_H - 42, 'STACKSTORM · LITTLE JOY ARCADE', 9, theme.ui.muted, {
